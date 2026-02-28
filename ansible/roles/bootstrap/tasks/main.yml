@@ -38,12 +38,6 @@
       #!/bin/bash
       systemctl reload nginx.service && echo "Success: systemctl reload nginx.service" || echo "Failed: systemctl reload nginx.service"
 
-- name: Remove unnecessary packages
-  ansible.builtin.apt:
-    name: '{{ packages_to_remove }}'
-    state: absent
-    purge: true
-
 - name: Configure locale
   locale_gen:
     name: en_US.UTF-8

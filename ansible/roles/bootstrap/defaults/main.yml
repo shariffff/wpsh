@@ -11,8 +11,3 @@ required_packages:
   - tzdata
   - unattended-upgrades
   - unzip
-
-packages_to_remove:
-  - lxd
-  - lxcfs
-  - snapd
