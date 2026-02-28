@@ -1,0 +1,52 @@
+---
+- name: Assert required variables are defined
+  ansible.builtin.assert:
+    that:
+      - domain is defined and domain != ""
+    fail_msg: "Required variable missing: domain must be provided for remove_domain operation"
+    success_msg: "Required domain variable is properly defined"
+  tags: remove_domain
+
+- name: Remove symlink from sites-enabled
+  ansible.builtin.file:
+    path: "/etc/nginx/sites-enabled/{{ domain }}"
+    state: absent
+  tags: remove_domain
+
+- name: Remove main site config
+  ansible.builtin.file:
+    path: "/etc/nginx/sites-available/{{ domain }}/{{ domain }}"
+    state: absent
+  tags: remove_domain
+
+- name: Remove site directory structure
+  ansible.builtin.file:
+    path: "/etc/nginx/sites-available/{{ domain }}/{{ item }}"
+    state: absent
+  loop:
+    - ""
+    - after
+    - before
+    - location
+    - server
+  tags: remove_domain
+
+- name: Validate nginx configuration after removal
+  ansible.builtin.command:
+    cmd: nginx -t
+  register: nginx_config_test
+  changed_when: false
+  tags: remove_domain
+
+- name: Fail if nginx configuration is invalid after removal
+  ansible.builtin.fail:
+    msg: "Nginx configuration test failed after domain removal: {{ nginx_config_test.stderr }}"
+  when: nginx_config_test.rc != 0
+  tags: remove_domain
+
+- name: Reload nginx after domain removal
+  ansible.builtin.systemd:
+    name: nginx
+    state: reloaded
+  when: nginx_config_test.rc == 0
+  tags: remove_domain

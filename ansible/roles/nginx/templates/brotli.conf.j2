@@ -1,0 +1,51 @@
+# Enable brotli compression.
+# Default: off
+brotli on;
+
+# Compression level (0-11).
+# Default: 6
+brotli_comp_level 6;
+
+# Don't compress anything that's already small and unlikely to shrink much
+# if at all (the default is 20 bytes, which is bad as that usually leads to
+# larger files after compression).
+# Default: 20
+brotli_min_length 256;
+
+# Compress all output labeled with one of the following MIME-types.
+# text/html is always compressed by brotli module.
+# Default: text/html
+brotli_types
+	application/atom+xml
+	application/geo+json
+	application/javascript
+	application/x-javascript
+	application/json
+	application/ld+json
+	application/manifest+json
+	application/rdf+xml
+	application/rss+xml
+	application/vnd.ms-fontobject
+	application/wasm
+	application/x-web-app-manifest+json
+	application/xhtml+xml
+	application/xml
+	font/eot
+	font/otf
+	font/ttf
+	image/bmp
+	image/svg+xml
+	image/vnd.microsoft.icon
+	image/x-icon
+	text/cache-manifest
+	text/calendar
+	text/css
+	text/javascript
+	text/markdown
+	text/plain
+	text/xml
+	text/vcard
+	text/vnd.rim.location.xloc
+	text/vtt
+	text/x-component
+	text/x-cross-domain-policy;

@@ -1,0 +1,32 @@
+---
+- hosts: all:!localhost
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Create MySQL/MariaDB database
+      community.mysql.mysql_db:
+        name: "{{ database_name }}"
+        state: "{{ 'present' if operation == 'create' else 'absent' }}"
+        encoding: "{{ charset | default('utf8mb4') }}"
+        collation: "{{ collation | default('utf8mb4_unicode_ci') }}"
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+      when: database_type in ['mysql', 'mariadb']
+      register: mysql_result
+
+    - name: Create PostgreSQL database
+      community.postgresql.postgresql_db:
+        name: "{{ database_name }}"
+        state: "{{ 'present' if operation == 'create' else 'absent' }}"
+        encoding: "{{ charset | default('UTF8') }}"
+      become_user: postgres
+      when: database_type == 'postgresql'
+      register: postgres_result
+
+    - name: Set operation result
+      ansible.builtin.set_fact:
+        operation_result: "{{ mysql_result if database_type in ['mysql', 'mariadb'] else postgres_result }}"
+        operation_message: "Database {{ database_name }} {{ 'created' if operation == 'create' else 'deleted' }} successfully"
+
+    - name: Display result
+      ansible.builtin.debug:
+        msg: "{{ operation_message }}"

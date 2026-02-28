@@ -1,0 +1,18 @@
+# {{ ansible_managed }}
+# SSH hardening configuration for WordMon
+# Variables defined in roles/security/defaults/main.yml
+
+# Root login: "no" to disable, "yes" to allow, "prohibit-password" for key-only
+PermitRootLogin {{ ssh_permit_root_login }}
+
+# Disable password authentication (use SSH keys only)
+PasswordAuthentication {{ ssh_password_authentication }}
+
+# Enable public key authentication
+PubkeyAuthentication {{ ssh_pubkey_authentication }}
+
+# Maximum authentication attempts before disconnecting
+MaxAuthTries {{ ssh_max_auth_tries }}
+
+# Time allowed to authenticate before disconnecting (seconds)
+LoginGraceTime {{ ssh_login_grace_time }}

@@ -1,0 +1,52 @@
+---
+# Main playbook for domain management operations
+- hosts: all
+  gather_facts: false
+  become: true
+  vars:
+    domain_config_path: "/etc/nginx/sites-available"
+    domain_enabled_path: "/etc/nginx/sites-enabled"
+    ssl_cert_path: "/etc/letsencrypt/live"
+
+  pre_tasks:
+    - name: Validate operation variable
+      ansible.builtin.assert:
+        that:
+          - operation is defined and operation | length > 0
+          - operation in ['add_domain', 'remove_domain', 'issue_ssl']
+        fail_msg: |
+          Invalid or missing operation. Please provide:
+            - operation: One of 'add_domain', 'remove_domain', or 'issue_ssl'
+          Pass via --extra-vars "operation=add_domain"
+
+  tasks:
+    - name: Add domain to Nginx
+      ansible.builtin.include_role:
+        name: libs
+        tasks_from: add_domain.yml
+      when: operation == 'add_domain'
+      tags: add_domain
+
+    - name: Remove domain from Nginx
+      ansible.builtin.include_role:
+        name: libs
+        tasks_from: remove_domain.yml
+      when: operation == 'remove_domain'
+      tags: remove_domain
+
+    - name: Issue SSL certificate
+      ansible.builtin.include_role:
+        name: libs
+        tasks_from: issue_ssl.yml
+      when: operation == 'issue_ssl'
+      tags: issue_ssl
+
+    - name: Reload Nginx configuration
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
+      when: nginx_config_changed is defined and nginx_config_changed
+      tags:
+        - add_domain
+        - remove_domain
+        - issue_ssl

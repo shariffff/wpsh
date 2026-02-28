@@ -1,0 +1,62 @@
+---
+- name: Verify - Database Role
+  hosts: all
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Verify mariadb is installed
+      ansible.builtin.package:
+        name: mariadb-server
+        state: present
+      check_mode: true
+      register: mariadb_pkg
+      failed_when: mariadb_pkg.changed
+
+    - name: Verify mariadb is running
+      ansible.builtin.systemd:
+        name: mariadb
+        state: started
+      check_mode: true
+      register: mariadb_status
+      failed_when: mariadb_status.changed
+
+    - name: Verify mariadb is enabled
+      ansible.builtin.systemd:
+        name: mariadb
+        enabled: true
+      check_mode: true
+      register: mariadb_enabled
+      failed_when: mariadb_enabled.changed
+
+    - name: Verify wordmonbot MySQL user can connect
+      ansible.builtin.command:
+        cmd: mysql -u wordmonbot -p'MoleculeTestPass123!' -e "SELECT 1;"
+      changed_when: false
+
+    - name: Verify wordmonbot has proper privileges
+      ansible.builtin.command:
+        cmd: mysql -u wordmonbot -p'MoleculeTestPass123!' -e "SHOW GRANTS;"
+      register: grants
+      changed_when: false
+      failed_when: "'ALL PRIVILEGES' not in grants.stdout"
+
+    - name: Verify root user has no remote access
+      ansible.builtin.command:
+        cmd: mysql -u root -e "SELECT Host FROM mysql.user WHERE User='root';"
+      register: root_hosts
+      changed_when: false
+      failed_when: "'%' in root_hosts.stdout"
+
+    - name: Verify test database was removed
+      ansible.builtin.command:
+        cmd: mysql -u root -e "SHOW DATABASES LIKE 'test';"
+      register: test_db
+      changed_when: false
+      failed_when: "'test' in test_db.stdout"
+
+    - name: Verify anonymous users were removed
+      ansible.builtin.command:
+        cmd: mysql -u root -e "SELECT User FROM mysql.user WHERE User='';"
+      register: anon_users
+      changed_when: false
+      failed_when: anon_users.stdout_lines | length > 1

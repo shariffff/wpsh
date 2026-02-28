@@ -1,0 +1,30 @@
+---
+# Database Role - Default Variables
+# Override these in group_vars/all.yml or via --extra-vars
+
+# MariaDB Performance Configuration
+# Disable performance_schema to reduce memory usage on small VPS
+mariadb_performance_schema: false
+
+# Binary logging (disable for single-server setups to save disk space)
+# Enable if you need replication or point-in-time recovery
+mariadb_binary_logging: false
+
+# InnoDB Buffer Pool Size
+# Recommended: 50-70% of available RAM for dedicated database servers
+# For shared WordPress hosting, keep conservative
+mariadb_innodb_buffer_pool_size: "256M"
+
+# Maximum allowed connections
+mariadb_max_connections: 100
+
+# Query cache (deprecated in MySQL 8.0, but still available in MariaDB)
+mariadb_query_cache_size: "0"
+
+# Character set and collation
+mariadb_character_set: "utf8mb4"
+mariadb_collation: "utf8mb4_unicode_ci"
+
+# Slow query log (useful for debugging, disable in production)
+mariadb_slow_query_log: false
+mariadb_long_query_time: 2

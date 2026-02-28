@@ -1,0 +1,81 @@
+---
+# Delete Site Playbook
+# Removes a WordPress site and all associated resources
+# Required variables: site_id, site_domain, db_host
+
+- name: Deprovision Website
+  hosts: all:!localhost
+  become: true
+  vars:
+    php_version: '8.3'
+    db_name: '{{ site_id }}'
+    db_user: '{{ site_id }}'
+    db_pass: "{{ lookup('password', '/dev/null', length=32) }}"
+    site_user: '{{ site_id }}'
+    site_group: '{{ site_id }}'
+    site_home: '/sites/{{ site_domain }}'
+  tasks:
+    - name: Remove cron job for {{ site_domain }}
+      ansible.builtin.cron:
+        name: '{{ site_domain }}'
+        state: absent
+
+    - name: Remove WordPress files
+      ansible.builtin.file:
+        path: '{{ site_home }}/files'
+        state: absent
+
+    - name: Drop MySQL database {{ db_name }}
+      community.mysql.mysql_db:
+        name: '{{ db_name }}'
+        state: absent
+        login_host: "{{ db_host.split(':')[0] }}"
+        login_port: "{{ db_host.split(':')[1] | default('3306') }}"
+        config_file: /home/wordmon/.my.cnf
+
+    - name: Drop MySQL user {{ db_user }}
+      community.mysql.mysql_user:
+        name: '{{ db_user }}'
+        state: absent
+        login_host: "{{ db_host.split(':')[0] }}"
+        login_port: "{{ db_host.split(':')[1] | default('3306') }}"
+        config_file: /home/wordmon/.my.cnf
+
+    - name: Remove site directories
+      ansible.builtin.file:
+        path: '{{ site_home }}'
+        state: absent
+
+    - name: Remove Nginx site configuration
+      ansible.builtin.file:
+        path: '/etc/nginx/sites-enabled/{{ site_domain }}.conf'
+        state: absent
+      notify: Reload nginx
+
+    - name: Remove PHP-FPM pool configuration
+      ansible.builtin.file:
+        path: '/etc/php/{{ php_version }}/fpm/pool.d/{{ site_id }}.conf'
+        state: absent
+      notify: Reload php-fpm
+
+    - name: Remove site user {{ site_user }}
+      ansible.builtin.user:
+        name: '{{ site_user }}'
+        state: absent
+        remove: true
+
+    - name: Remove site group {{ site_group }}
+      ansible.builtin.group:
+        name: '{{ site_group }}'
+        state: absent
+
+  handlers:
+    - name: Reload nginx
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
+
+    - name: Reload php-fpm
+      ansible.builtin.service:
+        name: 'php{{ php_version }}-fpm'
+        state: reloaded

@@ -1,0 +1,16 @@
+---
+- name: Ensure cron job for wp-cron
+  ansible.builtin.cron:
+    name: "wp-cron-{{ domain }}"
+    minute: "2,7,12,17,22,27,32,37,42,47,52,57"
+    job: "cd {{ site_home }}/files/; flock -n ~/.wp_cron.lock /usr/local/bin/wp cron event run --due-now --quiet"
+    user: "{{ site_user }}"
+    state: present
+
+- name: Ensure PATH is set in cron
+  ansible.builtin.cron:
+    name: "PATH"
+    env: true
+    user: "{{ site_user }}"
+    value: "{{ site_home }}/.local/bin:/usr/bin:/bin"
+    state: present

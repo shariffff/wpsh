@@ -1,0 +1,37 @@
+# WordMon Ansible - Inventory Example
+# Copy this file to 'hosts' and customize for your servers
+
+# ============================================
+# SINGLE SERVER SETUP
+# ============================================
+
+[webservers]
+# Replace with your server's IP address
+192.168.1.100
+
+# ============================================
+# MULTIPLE SERVERS (uncomment to use)
+# ============================================
+
+# [webservers]
+# server1.example.com
+# server2.example.com
+# 203.0.113.10
+# 203.0.113.11
+
+# ============================================
+# CONNECTION SETTINGS
+# ============================================
+
+[webservers:vars]
+# SSH user for initial connection (must have sudo access)
+ansible_user=root
+
+# Use SSH key authentication (recommended)
+# ansible_ssh_private_key_file=~/.ssh/id_ed25519
+
+# Or use password authentication (not recommended for production)
+# ansible_ssh_pass=your-ssh-password
+
+# SSH port (default: 22)
+# ansible_port=22

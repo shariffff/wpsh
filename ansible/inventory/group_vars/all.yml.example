@@ -1,0 +1,32 @@
+---
+# WordMon Ansible - Configuration Template
+# Copy this file to 'all.yml' and fill in your values
+
+# ============================================
+# REQUIRED VARIABLES
+# ============================================
+
+# Your email address for Let's Encrypt SSL certificates
+# This email will receive expiration notices and important updates
+certbot_email: "your-email@example.com"
+
+# Your SSH public key for the wordmon user
+# Can be either:
+#   1. File path: "~/.ssh/id_ed25519.pub" or "/path/to/key.pub"
+#   2. Key content: "ssh-ed25519 AAAA... your-key-comment"
+# Generate with: ssh-keygen -t ed25519 -C "wordmon"
+wordmon_ssh_key: "~/.ssh/id_ed25519.pub"
+
+# Password for the wordmonbot MySQL user (used for database management)
+# Generate a strong password (minimum 24 characters recommended)
+mysql_wordmonbot_password: "generate-a-strong-password-here"
+
+# ============================================
+# OPTIONAL VARIABLES (defaults shown)
+# ============================================
+
+# Marker added to managed files (do not change after initial setup)
+ansible_managed: "Managed by WordMon"
+
+# MySQL root password (auto-generated if not set)
+# mysql_root_password: "{{ lookup('password', '/dev/null length=24 chars=ascii_letters,digits') }}"

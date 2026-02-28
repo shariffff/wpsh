@@ -1,0 +1,80 @@
+---
+- name: Verify - Nginx Role
+  hosts: all
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Verify nginx is installed
+      ansible.builtin.package:
+        name: nginx
+        state: present
+      check_mode: true
+      register: nginx_pkg
+      failed_when: nginx_pkg.changed
+
+    - name: Verify nginx is running
+      ansible.builtin.systemd:
+        name: nginx
+        state: started
+      check_mode: true
+      register: nginx_status
+      failed_when: nginx_status.changed
+
+    - name: Verify nginx is enabled
+      ansible.builtin.systemd:
+        name: nginx
+        enabled: true
+      check_mode: true
+      register: nginx_enabled
+      failed_when: nginx_enabled.changed
+
+    - name: Verify nginx config is valid
+      ansible.builtin.command:
+        cmd: nginx -t
+      changed_when: false
+
+    - name: Verify main nginx.conf exists
+      ansible.builtin.stat:
+        path: /etc/nginx/nginx.conf
+      register: nginx_conf
+      failed_when: not nginx_conf.stat.exists
+
+    - name: Verify global configs directory exists
+      ansible.builtin.stat:
+        path: /etc/nginx/global
+      register: global_dir
+      failed_when: not global_dir.stat.exists or not global_dir.stat.isdir
+
+    - name: Verify sites-available directory exists
+      ansible.builtin.stat:
+        path: /etc/nginx/sites-available
+      register: sites_available
+      failed_when: not sites_available.stat.exists or not sites_available.stat.isdir
+
+    - name: Verify sites-enabled directory exists
+      ansible.builtin.stat:
+        path: /etc/nginx/sites-enabled
+      register: sites_enabled
+      failed_when: not sites_enabled.stat.exists or not sites_enabled.stat.isdir
+
+    - name: Verify default SSL certificate exists
+      ansible.builtin.stat:
+        path: /etc/nginx/ssl/default.crt
+      register: default_cert
+      failed_when: not default_cert.stat.exists
+
+    - name: Verify default SSL key exists
+      ansible.builtin.stat:
+        path: /etc/nginx/ssl/default.key
+      register: default_key
+      failed_when: not default_key.stat.exists
+
+    - name: Verify nginx is listening on port 80
+      ansible.builtin.wait_for:
+        port: 80
+        timeout: 5
+
+    - name: Verify nginx is listening on port 443
+      ansible.builtin.wait_for:
+        port: 443
+        timeout: 5

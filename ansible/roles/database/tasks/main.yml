@@ -1,0 +1,82 @@
+---
+# Database Role Tasks
+# Installs and configures MariaDB with security hardening
+# Variables defined in roles/database/defaults/main.yml
+
+- name: Install MariaDB server and client
+  ansible.builtin.apt:
+    name:
+      - mariadb-server
+      - mariadb-client
+      - python3-mysqldb
+    state: present
+    update_cache: true
+
+- name: Ensure MariaDB service is started and enabled
+  ansible.builtin.systemd:
+    name: mysql
+    state: started
+    enabled: true
+
+# Apply MariaDB configuration from template
+# Settings include buffer pool size, max connections, character set
+- name: Configure MariaDB settings
+  ansible.builtin.template:
+    src: wordmon.cnf.j2
+    dest: /etc/mysql/conf.d/wordmon.cnf
+    mode: '0644'
+  notify: restart mariadb
+
+- name: Create MariaDB systemd override directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/mariadb.service.d
+    state: directory
+    mode: '0755'
+
+- name: Configure MariaDB systemd override
+  ansible.builtin.template:
+    src: override.conf.j2
+    dest: /etc/systemd/system/mariadb.service.d/override.conf
+    mode: '0644'
+  notify: daemon-reload
+
+# Root user configuration for local administration
+- name: Create root MySQL user configuration
+  ansible.builtin.template:
+    src: .root-my.cnf.j2
+    dest: /root/.my.cnf
+    mode: '0600'
+
+# Create admin user for WordMon operations
+# This user is used by the CLI for database management
+- name: Create wordmonbot MySQL admin user
+  community.mysql.mysql_user:
+    name: wordmonbot
+    host: localhost
+    password: '{{ mysql_wordmonbot_password }}'
+    priv: '*.*:ALL,GRANT'
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    plugin: mysql_native_password
+    update_password: always
+
+- name: Create wordmon MySQL user configuration
+  ansible.builtin.template:
+    src: .wordmon-my.cnf.j2
+    dest: /home/wordmon/.my.cnf
+    mode: '0600'
+    owner: wordmon
+
+# Security hardening: Remove test database and anonymous users
+- name: Remove test database
+  community.mysql.mysql_db:
+    name: test
+    state: absent
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Remove anonymous MySQL users
+  community.mysql.mysql_user:
+    name: ''
+    host_all: true
+    state: absent
+    login_unix_socket: /var/run/mysqld/mysqld.sock

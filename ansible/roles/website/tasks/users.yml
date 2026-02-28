@@ -1,0 +1,14 @@
+---
+- name: Create site-space group
+  ansible.builtin.group:
+    name: "{{ site_group }}"
+    state: present
+
+- name: Create site-space user
+  ansible.builtin.user:
+    name: "{{ site_user }}"
+    group: "{{ site_group }}"
+    home: "{{ site_home }}"
+    shell: /bin/bash
+    create_home: true
+    state: present

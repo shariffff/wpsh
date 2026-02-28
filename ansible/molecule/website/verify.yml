@@ -1,0 +1,128 @@
+---
+- name: Verify - WordPress Website Creation
+  hosts: all
+  become: true
+  gather_facts: true
+  vars:
+    domain: "test.local"
+    site_id: "testsite"
+  tasks:
+    # User verification
+    - name: Verify site user exists
+      ansible.builtin.user:
+        name: "{{ site_id }}"
+        state: present
+      check_mode: true
+      register: site_user
+      failed_when: site_user.changed
+
+    - name: Verify site group exists
+      ansible.builtin.group:
+        name: "{{ site_id }}"
+        state: present
+      check_mode: true
+      register: site_group
+      failed_when: site_group.changed
+
+    # Directory structure
+    - name: Verify site home directory exists
+      ansible.builtin.stat:
+        path: "/sites/{{ domain }}"
+      register: site_home
+      failed_when: not site_home.stat.exists or not site_home.stat.isdir
+
+    - name: Verify public directory exists
+      ansible.builtin.stat:
+        path: "/sites/{{ domain }}/public"
+      register: public_dir
+      failed_when: not public_dir.stat.exists or not public_dir.stat.isdir
+
+    - name: Verify logs directory exists
+      ansible.builtin.stat:
+        path: "/sites/{{ domain }}/logs"
+      register: logs_dir
+      failed_when: not logs_dir.stat.exists or not logs_dir.stat.isdir
+
+    # WordPress installation
+    - name: Verify wp-config.php exists
+      ansible.builtin.stat:
+        path: "/sites/{{ domain }}/public/wp-config.php"
+      register: wp_config
+      failed_when: not wp_config.stat.exists
+
+    - name: Verify WordPress index.php exists
+      ansible.builtin.stat:
+        path: "/sites/{{ domain }}/public/index.php"
+      register: wp_index
+      failed_when: not wp_index.stat.exists
+
+    - name: Verify wp-content directory exists
+      ansible.builtin.stat:
+        path: "/sites/{{ domain }}/public/wp-content"
+      register: wp_content
+      failed_when: not wp_content.stat.exists or not wp_content.stat.isdir
+
+    # Nginx configuration
+    - name: Verify nginx site config exists
+      ansible.builtin.stat:
+        path: "/etc/nginx/sites-available/{{ domain }}"
+      register: nginx_site_dir
+      failed_when: not nginx_site_dir.stat.exists
+
+    - name: Verify nginx site is enabled
+      ansible.builtin.stat:
+        path: "/etc/nginx/sites-enabled/{{ domain }}"
+      register: nginx_enabled
+      failed_when: not nginx_enabled.stat.exists
+
+    - name: Verify nginx config is valid
+      ansible.builtin.command:
+        cmd: nginx -t
+      changed_when: false
+
+    # PHP-FPM pool
+    - name: Verify PHP-FPM pool config exists
+      ansible.builtin.stat:
+        path: "/etc/php/8.3/fpm/pool.d/{{ site_id }}.conf"
+      register: php_pool
+      failed_when: not php_pool.stat.exists
+
+    - name: Verify PHP-FPM is running with new pool
+      ansible.builtin.systemd:
+        name: php8.3-fpm
+        state: started
+      check_mode: true
+      register: php_fpm
+      failed_when: php_fpm.changed
+
+    # Database
+    - name: Verify site database exists
+      ansible.builtin.command:
+        cmd: mysql -u root -e "SHOW DATABASES LIKE '{{ site_id }}';"
+      register: site_db
+      changed_when: false
+      failed_when: "site_id not in site_db.stdout"
+
+    - name: Verify site database user exists
+      ansible.builtin.command:
+        cmd: mysql -u root -e "SELECT User FROM mysql.user WHERE User='{{ site_id }}';"
+      register: db_user
+      changed_when: false
+      failed_when: "site_id not in db_user.stdout"
+
+    # WordPress verification using WP-CLI
+    - name: Verify WordPress is installed correctly
+      ansible.builtin.command:
+        cmd: wp core is-installed --path=/sites/{{ domain }}/public
+      become: true
+      become_user: "{{ site_id }}"
+      changed_when: false
+
+    - name: Verify WordPress site URL
+      ansible.builtin.command:
+        cmd: wp option get siteurl --path=/sites/{{ domain }}/public
+      become: true
+      become_user: "{{ site_id }}"
+      register: wp_siteurl
+      changed_when: false
+      failed_when: "domain not in wp_siteurl.stdout"

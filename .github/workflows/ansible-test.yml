@@ -1,0 +1,145 @@
+---
+name: Ansible Tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ansible/**'
+      - '.github/workflows/ansible-test.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ansible/**'
+      - '.github/workflows/ansible-test.yml'
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install yamllint ansible ansible-lint
+
+      - name: Run yamllint
+        run: yamllint ansible/
+
+      - name: Run ansible-lint
+        run: ansible-lint ansible/
+
+      - name: Syntax check playbooks
+        run: |
+          cd ansible
+          ansible-playbook --syntax-check provision.yml
+          ansible-playbook --syntax-check website.yml
+          ansible-playbook --syntax-check playbooks/domain_management.yml
+          ansible-playbook --syntax-check playbooks/delete_site.yml
+
+  role-tests:
+    name: Role Test - ${{ matrix.role }}
+    runs-on: ubuntu-latest
+    needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        role:
+          - bootstrap
+          - database
+          - nginx
+          - php
+          - security
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install molecule molecule-plugins[docker] ansible
+
+      - name: Install Ansible Galaxy requirements
+        run: |
+          cd ansible
+          ansible-galaxy install -r requirements.yml
+
+      - name: Run Molecule tests
+        run: |
+          cd ansible/roles/${{ matrix.role }}
+          molecule test
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+
+  provision-integration:
+    name: Integration - Provision
+    runs-on: ubuntu-latest
+    needs: role-tests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install molecule molecule-plugins[docker] ansible
+
+      - name: Install Ansible Galaxy requirements
+        run: |
+          cd ansible
+          ansible-galaxy install -r requirements.yml
+
+      - name: Run provision integration test
+        run: |
+          cd ansible
+          molecule test -s provision
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+
+  website-integration:
+    name: Integration - Website
+    runs-on: ubuntu-latest
+    needs: provision-integration
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install molecule molecule-plugins[docker] ansible
+
+      - name: Install Ansible Galaxy requirements
+        run: |
+          cd ansible
+          ansible-galaxy install -r requirements.yml
+
+      - name: Run website integration test
+        run: |
+          cd ansible
+          molecule test -s website
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'

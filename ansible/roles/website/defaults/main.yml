@@ -1,0 +1,36 @@
+---
+# Website Role - Default Variables
+# Override these in group_vars/all.yml, via --extra-vars, or per-site
+
+# PHP version for the site (should match the version installed by php role)
+php_version: "8.3"
+
+# PHP-FPM Pool Configuration (per-site settings)
+# Process manager mode: static, dynamic, or ondemand
+site_php_pm: "dynamic"
+site_php_pm_max_children: 5
+site_php_pm_start_servers: 1
+site_php_pm_min_spare_servers: 1
+site_php_pm_max_spare_servers: 1
+site_php_pm_max_requests: 500
+site_php_pm_process_idle_timeout: "10s"
+
+# WordPress Configuration
+wp_locale: "en_US"
+wp_debug: false
+wp_debug_log: false
+wp_debug_display: false
+
+# Cron Configuration
+# Use WordPress built-in cron (false) or system cron (true)
+wp_disable_cron: true
+wp_cron_interval: "*/5"  # Every 5 minutes when using system cron
+
+# File permissions
+site_dir_permissions: "0755"
+site_file_permissions: "0644"
+
+# WordPress auto-update settings
+wp_auto_update_core: "minor"  # Options: true, false, "minor"
+wp_auto_update_plugins: false
+wp_auto_update_themes: false

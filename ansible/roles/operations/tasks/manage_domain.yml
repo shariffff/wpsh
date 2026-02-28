@@ -1,0 +1,22 @@
+---
+- hosts: all:!localhost
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Add domain to Nginx
+      include_role:
+        name: libs
+        tasks_from: add_domain.yml
+      tags: add_domain
+
+    - name: Remove domain from Nginx
+      include_role:
+        name: libs
+        tasks_from: remove_domain.yml
+      tags: remove_domain
+
+    - name: Issue SSL
+      include_role:
+        name: libs
+        tasks_from: issue_ssl.yml
+      tags: issue_ssl

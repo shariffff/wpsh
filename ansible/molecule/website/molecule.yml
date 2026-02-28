@@ -1,0 +1,44 @@
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+
+driver:
+  name: docker
+
+platforms:
+  - name: website-test
+    image: geerlingguy/docker-ubuntu2404-ansible
+    pre_build_image: true
+    privileged: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    command: /lib/systemd/systemd
+    tmpfs:
+      - /run
+      - /tmp
+
+provisioner:
+  name: ansible
+  inventory:
+    host_vars:
+      website-test:
+        ansible_user: root
+  env:
+    ANSIBLE_ROLES_PATH: "../../roles"
+
+verifier:
+  name: ansible
+
+scenario:
+  name: website
+  test_sequence:
+    - dependency
+    - syntax
+    - create
+    - prepare
+    - converge
+    - verify
+    - destroy

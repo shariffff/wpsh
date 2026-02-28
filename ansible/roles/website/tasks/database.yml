@@ -1,0 +1,21 @@
+---
+- name: Create MySQL database
+  community.mysql.mysql_db:
+    name: '{{ db_name }}'
+    state: present
+    encoding: utf8mb4
+    collation: utf8mb4_unicode_520_ci
+    login_host: "{{ db_host.split(':')[0] }}"
+    login_port: "{{ db_host.split(':')[1] | default('3306') }}"
+    config_file: /home/wordmon/.my.cnf
+
+- name: Create MySQL user
+  community.mysql.mysql_user:
+    name: '{{ db_user }}'
+    password: '{{ db_pass }}'
+    priv: '{{ db_name }}.*:ALL'
+    host: localhost
+    state: present
+    login_host: "{{ db_host.split(':')[0] }}"
+    login_port: "{{ db_host.split(':')[1] | default('3306') }}"
+    config_file: /home/wordmon/.my.cnf

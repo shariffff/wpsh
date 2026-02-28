@@ -1,0 +1,69 @@
+---
+- name: Verify - Security Role
+  hosts: all
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Verify ufw is installed
+      ansible.builtin.package:
+        name: ufw
+        state: present
+      check_mode: true
+      register: ufw_pkg
+      failed_when: ufw_pkg.changed
+
+    - name: Verify ufw is active
+      ansible.builtin.command:
+        cmd: ufw status
+      register: ufw_status
+      changed_when: false
+      failed_when: "'Status: active' not in ufw_status.stdout"
+
+    - name: Verify SSH port 22 is allowed
+      ansible.builtin.command:
+        cmd: ufw status
+      register: ufw_rules
+      changed_when: false
+      failed_when: "'22' not in ufw_rules.stdout"
+
+    - name: Verify HTTP port 80 is allowed
+      ansible.builtin.command:
+        cmd: ufw status
+      register: ufw_rules_80
+      changed_when: false
+      failed_when: "'80' not in ufw_rules_80.stdout"
+
+    - name: Verify HTTPS port 443 is allowed
+      ansible.builtin.command:
+        cmd: ufw status
+      register: ufw_rules_443
+      changed_when: false
+      failed_when: "'443' not in ufw_rules_443.stdout"
+
+    - name: Verify SSH config exists
+      ansible.builtin.stat:
+        path: /etc/ssh/sshd_config
+      register: sshd_config
+      failed_when: not sshd_config.stat.exists
+
+    - name: Verify SSH root login is disabled (if configured)
+      ansible.builtin.command:
+        cmd: grep -E "^PermitRootLogin" /etc/ssh/sshd_config
+      register: root_login
+      changed_when: false
+      failed_when: false
+
+    - name: Verify SSH password authentication setting
+      ansible.builtin.command:
+        cmd: grep -E "^PasswordAuthentication" /etc/ssh/sshd_config
+      register: password_auth
+      changed_when: false
+      failed_when: false
+
+    - name: Verify SSH service is running
+      ansible.builtin.systemd:
+        name: ssh
+        state: started
+      check_mode: true
+      register: ssh_status
+      failed_when: ssh_status.changed

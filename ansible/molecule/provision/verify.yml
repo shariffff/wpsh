@@ -1,0 +1,126 @@
+---
+- name: Verify - Provision Server
+  hosts: all
+  become: true
+  gather_facts: true
+  tasks:
+    # Bootstrap role verifications
+    - name: Verify wordmon user exists
+      ansible.builtin.user:
+        name: wordmon
+        state: present
+      check_mode: true
+      register: wordmon_user
+      failed_when: wordmon_user.changed
+
+    - name: Verify /sites directory exists
+      ansible.builtin.stat:
+        path: /sites
+      register: sites_dir
+      failed_when: not sites_dir.stat.exists or not sites_dir.stat.isdir
+
+    - name: Verify fail2ban is running
+      ansible.builtin.systemd:
+        name: fail2ban
+        state: started
+      check_mode: true
+      register: fail2ban_status
+      failed_when: fail2ban_status.changed
+
+    - name: Verify redis is running
+      ansible.builtin.systemd:
+        name: redis-server
+        state: started
+      check_mode: true
+      register: redis_status
+      failed_when: redis_status.changed
+
+    # Database role verifications
+    - name: Verify mariadb is running
+      ansible.builtin.systemd:
+        name: mariadb
+        state: started
+      check_mode: true
+      register: mariadb_status
+      failed_when: mariadb_status.changed
+
+    - name: Verify wordmonbot MySQL user can connect
+      ansible.builtin.command:
+        cmd: mysql -u wordmonbot -p'MoleculeTestPass123!' -e "SELECT 1;"
+      changed_when: false
+
+    - name: Verify test database was removed
+      ansible.builtin.command:
+        cmd: mysql -u root -e "SHOW DATABASES LIKE 'test';"
+      register: test_db
+      changed_when: false
+      failed_when: "'test' in test_db.stdout"
+
+    # Nginx role verifications
+    - name: Verify nginx is running
+      ansible.builtin.systemd:
+        name: nginx
+        state: started
+      check_mode: true
+      register: nginx_status
+      failed_when: nginx_status.changed
+
+    - name: Verify nginx config is valid
+      ansible.builtin.command:
+        cmd: nginx -t
+      changed_when: false
+
+    - name: Verify nginx global configs exist
+      ansible.builtin.stat:
+        path: '{{ item }}'
+      loop:
+        - /etc/nginx/nginx.conf
+        - /etc/nginx/global/
+      register: nginx_configs
+      failed_when: not nginx_configs.results[0].stat.exists
+
+    # PHP role verifications
+    - name: Verify php8.3-fpm is running
+      ansible.builtin.systemd:
+        name: php8.3-fpm
+        state: started
+      check_mode: true
+      register: php_status
+      failed_when: php_status.changed
+
+    - name: Verify WP-CLI is installed
+      ansible.builtin.command:
+        cmd: wp --version
+      changed_when: false
+
+    - name: Verify PHP extensions are loaded
+      ansible.builtin.command:
+        cmd: php -m
+      register: php_modules
+      changed_when: false
+      failed_when: >
+        'mysqli' not in php_modules.stdout or
+        'curl' not in php_modules.stdout or
+        'mbstring' not in php_modules.stdout or
+        'xml' not in php_modules.stdout or
+        'zip' not in php_modules.stdout or
+        'gd' not in php_modules.stdout or
+        'redis' not in php_modules.stdout
+
+    # Security role verifications
+    - name: Verify ufw is active
+      ansible.builtin.command:
+        cmd: ufw status
+      register: ufw_status
+      changed_when: false
+      failed_when: "'Status: active' not in ufw_status.stdout"
+
+    - name: Verify required ports are allowed
+      ansible.builtin.command:
+        cmd: ufw status
+      register: ufw_rules
+      changed_when: false
+      failed_when: >
+        '22' not in ufw_rules.stdout or
+        '80' not in ufw_rules.stdout or
+        '443' not in ufw_rules.stdout

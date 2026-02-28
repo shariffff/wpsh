@@ -1,0 +1,20 @@
+---
+# Ansible Galaxy Requirements
+# Install with: ansible-galaxy install -r requirements.yml
+
+collections:
+  # Core Ansible modules (usually included by default)
+  - name: ansible.builtin
+    version: ">=2.14.0"
+
+  # POSIX modules for authorized_key, acl, etc.
+  - name: ansible.posix
+    version: ">=1.5.0"
+
+  # MySQL/MariaDB database management
+  - name: community.mysql
+    version: ">=3.5.0"
+
+  # General utilities (UFW, etc.)
+  - name: community.general
+    version: ">=6.0.0"

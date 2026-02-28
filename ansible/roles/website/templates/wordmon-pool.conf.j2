@@ -1,0 +1,4 @@
+env[WORDMON_SITE] = '1' ; # {{ ansible_managed }}
+env[WORDMON_LOG_PATH] = '/sites/{{ domain }}/logs/debug.log'; # {{ ansible_managed }}
+env[WORDMON_CACHE_KEY_SALT] = '{{ domain }}'; # {{ ansible_managed }}
+env[WORDMON_CACHE_PATH] = '/cache/{{ domain }}' ; # {{ ansible_managed }}

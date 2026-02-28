@@ -1,0 +1,24 @@
+---
+- name: Configure WordPress Hosting Server
+  hosts: all:!localhost
+  become: true
+  gather_facts: true
+  pre_tasks:
+    - name: Validate required variables
+      ansible.builtin.assert:
+        that:
+          - certbot_email is defined and certbot_email | length > 0
+          - mysql_wordmonbot_password is defined and mysql_wordmonbot_password | length > 0
+          - wordmon_ssh_key is defined and wordmon_ssh_key | length > 0
+        fail_msg: |
+          Required variables are missing or empty. Please set:
+            - certbot_email: Email for Let's Encrypt certificates
+            - mysql_wordmonbot_password: MySQL admin password
+            - wordmon_ssh_key: SSH public key for wordmon user
+          Set these in group_vars/all.yml or pass via --extra-vars
+  roles:
+    - { role: bootstrap, tags: 'bootstrap' }
+    - { role: database, tags: 'database' }
+    - { role: nginx, tags: 'nginx' }
+    - { role: php, tags: 'php' }
+    - { role: security, tags: 'security' }

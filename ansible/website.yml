@@ -1,0 +1,67 @@
+---
+- name: Setup WordPress Website
+  hosts: all:!localhost
+  become: true
+  gather_facts: false
+
+  # Base variables (safe defaults)
+  vars:
+    db_host: localhost
+
+  # Compute dynamic variables after --extra-vars are loaded
+  pre_tasks:
+    - name: Validate required variables
+      ansible.builtin.assert:
+        that:
+          - domain is defined and domain | length > 0
+          - site_id is defined and site_id | length > 0
+          - wp_admin_user is defined and wp_admin_user | length > 0
+          - wp_admin_email is defined and wp_admin_email | length > 0
+          - wp_admin_password is defined and wp_admin_password | length > 0
+        fail_msg: |
+          Required variables are missing or empty. Please provide:
+            - domain: Primary domain name (e.g., example.com)
+            - site_id: Site identifier for user/database names
+            - wp_admin_user: WordPress admin username
+            - wp_admin_email: WordPress admin email
+            - wp_admin_password: WordPress admin password
+          Pass these via --extra-vars
+      tags: ["website"]
+
+    - name: Generate random credentials and set dynamic facts
+      ansible.builtin.set_fact:
+        site_user: "{{ site_id }}"
+        site_group: "{{ site_id }}"
+        site_home: "/sites/{{ domain }}"
+        db_name: "{{ site_id }}"
+        db_user: "{{ site_id }}"
+        db_pass: "{{ lookup('password', '/dev/null length=20 chars=ascii_letters,digits') }}"
+        db_prefix: "{{ lookup('password', '/dev/null length=4 chars=ascii_lowercase') }}_"
+        admin_user: "{{ wp_admin_user }}"
+        admin_email: "{{ wp_admin_email }}"
+        admin_password: "{{ wp_admin_password }}"
+      tags: ["website"]
+
+  roles:
+    - role: website
+      tags: ["website"]
+
+  post_tasks:
+    # Skip SSL if --extra-vars "skip_ssl=true" is passed
+    - name: Check DNS for SSL issuance
+      ansible.builtin.include_role:
+        name: libs
+        tasks_from: check_dns.yml
+      when: skip_ssl is not defined or not skip_ssl
+      tags: ["website", "ssl"]
+
+    - name: Issue SSL certificate if DNS matches
+      ansible.builtin.include_role:
+        name: libs
+        tasks_from: issue_ssl.yml
+      vars:
+        certbot_email: "{{ certbot_email | default(admin_email) }}"
+      when:
+        - skip_ssl is not defined or not skip_ssl
+        - dns_matches_server | default(false) | bool
+      tags: ["website", "ssl"]

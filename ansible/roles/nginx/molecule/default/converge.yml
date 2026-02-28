@@ -1,0 +1,6 @@
+---
+- name: Converge - Nginx Role
+  hosts: all
+  become: true
+  roles:
+    - role: nginx

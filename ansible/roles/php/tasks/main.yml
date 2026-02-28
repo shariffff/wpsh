@@ -1,0 +1,116 @@
+---
+# PHP Role Tasks
+# Installs and configures PHP-FPM with configurable version and extensions
+# Variables defined in roles/php/defaults/main.yml
+
+- name: Add PHP repository (ondrej/php PPA)
+  ansible.builtin.apt_repository:
+    repo: ppa:ondrej/php
+    state: present
+  register: add_repository
+
+- name: Install PHP {{ php_version }} and extensions
+  ansible.builtin.apt:
+    name: "{{ php_extensions | map('regex_replace', '^(.*)$', 'php' ~ php_version ~ '-\\1') | list + ['libpcre2-8-0'] }}"
+    state: present
+    update_cache: "{{ add_repository.changed }}"
+  notify: restart php-fpm
+
+- name: Configure PHP upload_max_filesize
+  ansible.builtin.lineinfile:
+    path: "/etc/php/{{ php_version }}/fpm/php.ini"
+    regexp: "^;?upload_max_filesize"
+    line: "upload_max_filesize = {{ php_upload_max_filesize }}"
+    state: present
+  notify: restart php-fpm
+
+- name: Configure PHP post_max_size
+  ansible.builtin.lineinfile:
+    path: "/etc/php/{{ php_version }}/fpm/php.ini"
+    regexp: "^;?post_max_size"
+    line: "post_max_size = {{ php_post_max_size }}"
+    state: present
+  notify: restart php-fpm
+
+- name: Configure PHP memory_limit
+  ansible.builtin.lineinfile:
+    path: "/etc/php/{{ php_version }}/fpm/php.ini"
+    regexp: "^;?memory_limit"
+    line: "memory_limit = {{ php_memory_limit }}"
+    state: present
+  notify: restart php-fpm
+
+- name: Configure PHP max_execution_time
+  ansible.builtin.lineinfile:
+    path: "/etc/php/{{ php_version }}/fpm/php.ini"
+    regexp: "^;?max_execution_time"
+    line: "max_execution_time = {{ php_max_execution_time }}"
+    state: present
+  notify: restart php-fpm
+
+- name: Configure PHP max_input_vars
+  ansible.builtin.lineinfile:
+    path: "/etc/php/{{ php_version }}/fpm/php.ini"
+    regexp: "^;?max_input_vars"
+    line: "max_input_vars = {{ php_max_input_vars }}"
+    state: present
+  notify: restart php-fpm
+
+# Security: Disable dangerous PHP functions
+# These functions are commonly exploited in WordPress attacks and shared hosting environments
+# See: https://www.php.net/manual/en/ini.core.php#ini.disable-functions
+- name: Configure PHP disabled functions for security
+  ansible.builtin.lineinfile:
+    path: "/etc/php/{{ php_version }}/fpm/php.ini"
+    regexp: "^;?disable_functions"
+    line: "disable_functions = {{ php_disabled_functions | join(',') }}"
+    state: present
+  notify: restart php-fpm
+
+- name: Configure PHP-FPM default pool process manager
+  ansible.builtin.lineinfile:
+    path: "/etc/php/{{ php_version }}/fpm/pool.d/www.conf"
+    regexp: "^pm ="
+    line: "pm = {{ php_fpm_pm }}"
+    state: present
+  notify: restart php-fpm
+
+# ImageMagick: Allow PDF processing for WordPress media library
+# Default policy restricts PDF due to Ghostscript vulnerabilities (CVE-2018-16509)
+# We enable read|write for WordPress PDF thumbnail generation
+- name: Configure ImageMagick PDF policy
+  ansible.builtin.lineinfile:
+    path: /etc/ImageMagick-6/policy.xml
+    regexp: '<policy\s+domain="coder"\s+rights="none"\s+pattern="PDF"\s+/>'
+    line: '  <policy domain="coder" rights="{{ imagemagick_pdf_policy }}" pattern="PDF" />'
+    state: present
+    backrefs: true
+
+- name: Install Composer
+  when: php_install_composer
+  block:
+    - name: Download Composer installer
+      ansible.builtin.get_url:
+        url: https://getcomposer.org/installer
+        dest: /tmp/composer-installer.php
+        mode: "0755"
+
+    - name: Run Composer installer
+      ansible.builtin.command: php /tmp/composer-installer.php --install-dir=/tmp --filename=composer.phar
+      args:
+        chdir: /tmp
+        creates: /tmp/composer.phar
+
+    - name: Install Composer globally
+      ansible.builtin.copy:
+        src: /tmp/composer.phar
+        dest: /usr/local/bin/composer
+        mode: "0755"
+        remote_src: true
+
+- name: Install WP-CLI
+  when: php_install_wpcli
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+    dest: /usr/local/bin/wp
+    mode: "0755"

@@ -1,0 +1,67 @@
+---
+# Emergency server cleanup task
+# Use this to clean up failed provisioning attempts
+# Usage: ansible-playbook cleanup.yml or include in rescue blocks
+# Variables defined in roles/libs/defaults/main.yml
+
+- name: 'Cleanup - Remove all Ondrej PPA configurations'
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: absent
+  with_items:
+    - /etc/apt/sources.list.d/ondrej-nginx.list
+    - /etc/apt/sources.list.d/ondrej-php.list
+    - /usr/share/keyrings/ondrej-nginx.gpg
+    - /usr/share/keyrings/ondrej-php.gpg
+  ignore_errors: true
+
+- name: 'Cleanup - Remove temporary GPG files'
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: absent
+  with_items:
+    - /tmp/ondrej-nginx.gpg.asc
+    - /tmp/ondrej-php.gpg.asc
+  ignore_errors: true
+
+- name: 'Cleanup - Stop services that might be running'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: stopped
+    enabled: false
+  with_items:
+    - nginx
+    - 'php{{ php_version }}-fpm'
+    - mysql
+    - mariadb
+  ignore_errors: true
+
+- name: 'Cleanup - Remove installed packages (use with caution)'
+  ansible.builtin.apt:
+    name: '{{ item }}'
+    state: absent
+    purge: true
+  with_items:
+    - nginx*
+    - 'php{{ php_version }}*'
+    - mariadb-server*
+  when: force_cleanup is defined and force_cleanup == true
+  ignore_errors: true
+
+- name: 'Cleanup - Update apt cache after cleanup'
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 0
+  retries: 3
+  delay: 10
+  ignore_errors: true
+
+- name: 'Cleanup - Remove WordMon provisioned marker'
+  ansible.builtin.file:
+    path: /etc/wordmon/provisioned
+    state: absent
+  ignore_errors: true
+
+- name: 'Cleanup - Display cleanup completion'
+  ansible.builtin.debug:
+    msg: 'Server cleanup completed. Removed PPA repositories, GPG keys, and stopped services. Use force_cleanup=true to remove packages completely.'

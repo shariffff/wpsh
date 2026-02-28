@@ -1,0 +1,123 @@
+---
+- name: Create apt keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: Download Nginx signing key
+  ansible.builtin.get_url:
+    url: https://nginx.org/keys/nginx_signing.key
+    dest: /etc/apt/keyrings/nginx.asc
+    mode: "0644"
+
+- name: Add Nginx repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/nginx.asc] {{ nginx_repo_url }}"
+    state: present
+    update_cache: true
+  register: result
+  until: result is success
+  retries: 2
+  delay: 5
+
+- name: Install Nginx and certbot
+  apt:
+    name:
+      - nginx
+      - python3-certbot-nginx
+    state: present
+    update_cache: true
+
+- name: Set ACL permissions for nginx directory
+  acl:
+    path: /etc/nginx
+    entity: site-users
+    etype: group
+    state: absent
+  ignore_errors: true
+
+- name: Create Nginx configuration
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    mode: "0644"
+  notify: restart nginx
+
+- name: Ensure fastcgi.conf exists
+  template:
+    src: fastcgi.conf.j2
+    dest: /etc/nginx/fastcgi.conf
+    mode: "0644"
+  notify: restart nginx
+
+- name: Create global directory
+  file:
+    path: /etc/nginx/global
+    state: directory
+    mode: "0755"
+
+- name: Create sites-available directory
+  file:
+    path: /etc/nginx/sites-available
+    state: directory
+    mode: "0755"
+
+- name: Create sites-enabled directory
+  file:
+    path: /etc/nginx/sites-enabled
+    state: directory
+    mode: "0755"
+
+- name: Generate default SSL certificate
+  command: openssl req -x509 -nodes -days 1095 -newkey rsa:2048 -keyout /etc/nginx/sites-available/.no-default.key -out /etc/nginx/sites-available/.no-default.crt -subj "/C=US/O=WordMon"
+  args:
+    creates: /etc/nginx/sites-available/.no-default.key
+
+- name: Create global configuration files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "0644"
+  with_items:
+    - { src: "fastcgi-cache.conf.j2", dest: "/etc/nginx/global/fastcgi-cache.conf" }
+    - { src: "https.conf.j2", dest: "/etc/nginx/global/https.conf" }
+    - { src: "uploads-directory-protection.conf.j2", dest: "/etc/nginx/global/uploads-directory-protection.conf" }
+    - { src: "wp-subdirectory.conf.j2", dest: "/etc/nginx/global/wp-subdirectory.conf" }
+    - { src: "xmlrpc-protection.conf.j2", dest: "/etc/nginx/global/xmlrpc-protection.conf" }
+    - { src: "well-known.conf.j2", dest: "/etc/nginx/global/well-known.conf" }
+  notify: reload nginx
+
+- name: Create no-default site configuration
+  template:
+    src: no-default.j2
+    dest: /etc/nginx/sites-available/no-default
+    mode: "0644"
+  notify: reload nginx
+
+- name: Enable no-default site
+  file:
+    src: /etc/nginx/sites-available/no-default
+    dest: /etc/nginx/sites-enabled/no-default
+    state: link
+  notify: reload nginx
+
+- name: Remove default site
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /etc/nginx/sites-enabled/default
+    - /etc/nginx/sites-available/default
+  notify: reload nginx
+
+- name: Test Nginx configuration
+  command: nginx -t
+  changed_when: false
+
+- name: Enable Nginx to start on boot
+  service:
+    name: nginx
+    enabled: true
+    state: started
+    use: service

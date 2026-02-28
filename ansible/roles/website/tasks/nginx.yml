@@ -1,0 +1,5 @@
+---
+- name: Add domain to Nginx
+  ansible.builtin.include_role:
+    name: libs
+    tasks_from: add_domain.yml

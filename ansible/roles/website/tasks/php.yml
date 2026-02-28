@@ -1,0 +1,53 @@
+---
+# Website Role - PHP Tasks
+# Configures PHP-FPM pool for the site
+# Variables defined in roles/website/defaults/main.yml
+
+- name: Ensure PHP {{ php_version }} FPM is installed
+  ansible.builtin.apt:
+    name: 'php{{ php_version }}-fpm'
+    state: present
+  become: true
+
+# Create per-site PHP-FPM pool configuration
+# Each site gets its own pool with isolated resources
+- name: Configure PHP-FPM pool for site
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - {
+        src: 'pool.conf.j2',
+        dest: '/etc/php/{{ php_version }}/fpm/pool.d/{{ site_id }}.conf',
+      }
+    - {
+        src: 'wordmon-pool.conf.j2',
+        dest: '{{ site_home }}/.wordmon-pool.conf',
+      }
+  notify: Reload php-fpm
+
+# Flush handlers to ensure PHP-FPM picks up the new pool before nginx starts using it
+- name: Flush handlers to reload PHP-FPM
+  ansible.builtin.meta: flush_handlers
+
+- name: Set ACL for PHP-FPM pool config
+  ansible.posix.acl:
+    path: '/etc/php/{{ php_version }}/fpm/pool.d/{{ site_id }}.conf'
+    entity: '{{ site_group }}'
+    etype: group
+    permissions: '---'
+    state: present
+    follow: true
+  ignore_errors: true
+
+# Create FastCGI cache directory for Nginx
+- name: Ensure cache directory exists for {{ domain }}
+  ansible.builtin.file:
+    path: '/cache/{{ domain }}'
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0700'

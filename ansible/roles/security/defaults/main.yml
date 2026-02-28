@@ -1,0 +1,25 @@
+---
+# Security Role - Default Variables
+# Override these in group_vars/all.yml or via --extra-vars
+
+# UFW Firewall Configuration
+# Ports to allow through the firewall (TCP)
+ufw_allowed_ports:
+  - 22    # SSH
+  - 80    # HTTP
+  - 443   # HTTPS
+
+# Default UFW policy for incoming connections
+ufw_default_policy: "deny"
+
+# SSH Hardening Configuration
+# Set to "no" to disable root login, "yes" to allow, or "prohibit-password" for key-only
+ssh_permit_root_login: "prohibit-password"
+
+# Disable password authentication (recommended: use SSH keys only)
+ssh_password_authentication: "no"
+
+# Additional SSH hardening options
+ssh_pubkey_authentication: "yes"
+ssh_max_auth_tries: 3
+ssh_login_grace_time: 60

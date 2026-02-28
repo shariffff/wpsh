@@ -1,0 +1,43 @@
+---
+# Check if domain DNS resolves to this server's IP
+# Sets facts: dns_matches_server, domain_resolved_ip, server_ip
+#
+# Required variables:
+#   - domain: The domain name to check DNS for
+
+- name: Validate required variables for DNS check
+  ansible.builtin.assert:
+    that:
+      - domain is defined
+      - domain | length > 0
+    fail_msg: "domain variable is required for DNS check"
+  tags: check_dns
+
+- name: Get server's public IP
+  ansible.builtin.uri:
+    url: https://api.ipify.org
+    return_content: true
+    timeout: 10
+  register: server_public_ip
+  changed_when: false
+  tags: check_dns
+
+- name: Resolve domain DNS
+  ansible.builtin.command:
+    cmd: "dig +short A {{ domain }} @8.8.8.8"
+  register: dns_lookup
+  changed_when: false
+  failed_when: false
+  tags: check_dns
+
+- name: Set DNS match facts
+  ansible.builtin.set_fact:
+    dns_matches_server: "{{ (dns_lookup.stdout_lines | first | default('')) == server_public_ip.content }}"
+    domain_resolved_ip: "{{ dns_lookup.stdout_lines | first | default('not resolved') }}"
+    server_ip: "{{ server_public_ip.content }}"
+  tags: check_dns
+
+- name: Display DNS status (for CLI parsing)
+  ansible.builtin.debug:
+    msg: "DNS_STATUS: domain={{ domain }} resolved_ip={{ domain_resolved_ip }} server_ip={{ server_ip }} matches={{ dns_matches_server }}"
+  tags: check_dns

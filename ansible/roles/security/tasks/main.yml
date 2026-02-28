@@ -1,0 +1,37 @@
+---
+# Security Role Tasks
+# Configures UFW firewall and SSH hardening
+# Variables defined in roles/security/defaults/main.yml
+
+- name: Install UFW
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+
+- name: Start and enable UFW service
+  ansible.builtin.systemd:
+    name: ufw
+    state: started
+
+# Configure firewall rules based on ufw_allowed_ports variable
+# Default allows SSH (22), HTTP (80), and HTTPS (443)
+- name: Configure UFW rules
+  community.general.ufw:
+    rule: allow
+    port: '{{ item }}'
+    proto: tcp
+  with_items: '{{ ufw_allowed_ports }}'
+
+- name: Enable UFW with default {{ ufw_default_policy }} policy
+  community.general.ufw:
+    state: enabled
+    policy: '{{ ufw_default_policy }}'
+
+# SSH hardening configuration
+# Settings defined in roles/security/defaults/main.yml
+- name: Configure SSH hardening
+  ansible.builtin.template:
+    src: 00-wordmon.conf.j2
+    dest: /etc/ssh/sshd_config.d/00-wordmon.conf
+    mode: '0644'
+  notify: restart ssh

@@ -1,0 +1,75 @@
+---
+- name: Assert required variables are defined
+  ansible.builtin.assert:
+    that:
+      - domain is defined and domain != ""
+      - site_id is defined and site_id != ""
+    fail_msg: "Required variables missing: domain and site_id must be provided for add_domain operation"
+    success_msg: "All required variables are properly defined"
+  tags: add_domain
+
+- name: Create site directory structure
+  ansible.builtin.file:
+    path: "/etc/nginx/sites-available/{{ domain }}/{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - ""
+    - after
+    - before
+    - location
+    - server
+  tags: add_domain
+
+- name: Remove existing https-redirect.conf if present (prevents port 80 conflict)
+  ansible.builtin.file:
+    path: "/etc/nginx/sites-available/{{ domain }}/after/https-redirect.conf"
+    state: absent
+  tags: add_domain
+
+- name: Ensure site logs directory exists
+  ansible.builtin.file:
+    path: "/sites/{{ domain }}/logs"
+    state: directory
+    owner: "{{ site_id }}"
+    group: "{{ site_id }}"
+    mode: "0755"
+  tags: add_domain
+
+- name: Deploy main site config
+  ansible.builtin.template:
+    src: site.conf.j2
+    dest: /etc/nginx/sites-available/{{ domain }}/{{ domain }}
+    owner: root
+    group: root
+    mode: "0644"
+  tags: add_domain
+
+- name: Symlink site to sites-enabled
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/{{ domain }}/{{ domain }}
+    dest: /etc/nginx/sites-enabled/{{ domain }}
+    state: link
+  tags: add_domain
+
+- name: Validate nginx configuration
+  ansible.builtin.command:
+    cmd: nginx -t
+  register: nginx_config_test
+  changed_when: false
+  tags: add_domain
+
+- name: Fail if nginx configuration is invalid
+  ansible.builtin.fail:
+    msg: "Nginx configuration test failed: {{ nginx_config_test.stderr }}"
+  when: nginx_config_test.rc != 0
+  tags: add_domain
+
+- name: Reload nginx after validation
+  ansible.builtin.systemd:
+    name: nginx
+    state: reloaded
+  when: nginx_config_test.rc == 0
+  tags: add_domain

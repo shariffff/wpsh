@@ -1,0 +1,45 @@
+; {{ ansible_managed }}
+; PHP-FPM pool configuration for {{ site_id }}
+; Variables defined in roles/website/defaults/main.yml
+
+[{{ site_id }}]
+
+user = {{ site_user }}
+group = {{ site_group }}
+
+listen = /run/php/php{{ php_version }}-{{ site_id }}.sock
+listen.owner = {{ site_user }}
+listen.group = www-data
+listen.mode = 0660
+
+; Process manager mode: static, dynamic, or ondemand
+; - static:  fixed number of child processes (pm.max_children)
+; - dynamic: adjusts based on load (recommended for most sites)
+; - ondemand: no children at startup, spawns on demand (memory efficient)
+pm = {{ site_php_pm }}
+
+; Maximum number of child processes
+; For dynamic/ondemand: this is the upper limit
+; For static: this is the fixed count
+pm.max_children = {{ site_php_pm_max_children }}
+
+{% if site_php_pm == 'dynamic' %}
+; Dynamic mode settings
+pm.start_servers = {{ site_php_pm_start_servers }}
+pm.min_spare_servers = {{ site_php_pm_min_spare_servers }}
+pm.max_spare_servers = {{ site_php_pm_max_spare_servers }}
+{% endif %}
+
+{% if site_php_pm == 'ondemand' %}
+; Ondemand mode: idle timeout before killing child process
+pm.process_idle_timeout = {{ site_php_pm_process_idle_timeout }}
+{% endif %}
+
+; Recycle workers after N requests to prevent memory leaks
+pm.max_requests = {{ site_php_pm_max_requests }}
+
+; Error logging for this pool
+php_admin_value[error_log] = {{ site_home }}/logs/debug.log
+
+; Include user-customizable settings
+include={{ site_home }}/.wordmon-pool.conf

@@ -1,0 +1,34 @@
+---
+- name: Create sudo group
+  ansible.builtin.group:
+    name: sudo
+    state: present
+
+- name: Configure sudoers
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    regexp: '^%sudo'
+    line: '%sudo ALL=(ALL:ALL) ALL'
+    validate: /usr/sbin/visudo -cf %s
+
+- name: Create wordmon user
+  ansible.builtin.user:
+    name: wordmon
+    groups: sudo
+    shell: /bin/bash
+    create_home: true
+    state: present
+
+- name: Set up authorized key for wordmon
+  ansible.posix.authorized_key:
+    user: wordmon
+    key: "{{ lookup('file', wordmon_ssh_key) if wordmon_ssh_key is match('.*\\.(pub|pem)$') or wordmon_ssh_key.startswith('~') or wordmon_ssh_key.startswith('/') else wordmon_ssh_key }}"
+    state: present
+    manage_dir: true
+
+- name: Configure sudoers for wordmon
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/00-wordmon
+    content: 'wordmon ALL=(ALL) NOPASSWD: ALL'
+    mode: '0440'
+    validate: /usr/sbin/visudo -cf %s

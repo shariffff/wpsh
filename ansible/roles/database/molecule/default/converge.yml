@@ -1,0 +1,8 @@
+---
+- name: Converge - Database Role
+  hosts: all
+  become: true
+  vars:
+    mysql_wordmonbot_password: 'MoleculeTestPass123!'
+  roles:
+    - role: database

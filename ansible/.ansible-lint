@@ -1,0 +1,28 @@
+---
+profile: production
+
+exclude_paths:
+  - .git/
+  - molecule/
+  - roles/*/molecule/
+
+skip_list:
+  - yaml[line-length]  # Let yamllint handle line length
+  - name[casing]       # Allow flexible task naming
+  - var-naming[no-role-prefix]  # Allow variables without role prefix
+
+warn_list:
+  - experimental
+  - command-instead-of-module  # Some commands don't have modules
+
+enable_list:
+  - args
+  - empty-string-compare
+  - no-log-password
+  - no-same-owner
+
+# Allow specific command modules where shell/command is appropriate
+use_default_rules: true
+
+# Offline mode - don't check galaxy requirements
+offline: false

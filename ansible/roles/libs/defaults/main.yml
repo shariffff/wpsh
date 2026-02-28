@@ -1,0 +1,7 @@
+---
+# Libs Role - Default Variables
+# Shared variables used by reusable task libraries
+# Override these in group_vars/all.yml or via --extra-vars
+
+# PHP version (should match the version installed by php role)
+php_version: "8.3"

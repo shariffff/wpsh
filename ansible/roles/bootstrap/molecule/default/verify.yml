@@ -1,0 +1,83 @@
+---
+- name: Verify - Bootstrap Role
+  hosts: all
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Verify wordmon user exists
+      ansible.builtin.user:
+        name: wordmon
+        state: present
+      check_mode: true
+      register: wordmon_user
+      failed_when: wordmon_user.changed
+
+    - name: Verify wordmon user has sudo access
+      ansible.builtin.command:
+        cmd: sudo -l -U wordmon
+      register: sudo_check
+      changed_when: false
+      failed_when: "'NOPASSWD' not in sudo_check.stdout"
+
+    - name: Verify /sites directory exists
+      ansible.builtin.stat:
+        path: /sites
+      register: sites_dir
+      failed_when: not sites_dir.stat.exists or not sites_dir.stat.isdir
+
+    - name: Verify /sites ownership
+      ansible.builtin.stat:
+        path: /sites
+      register: sites_stat
+      failed_when: sites_stat.stat.pw_name != 'root'
+
+    - name: Verify fail2ban is running
+      ansible.builtin.systemd:
+        name: fail2ban
+        state: started
+      check_mode: true
+      register: fail2ban_status
+      failed_when: fail2ban_status.changed
+
+    - name: Verify fail2ban is enabled
+      ansible.builtin.systemd:
+        name: fail2ban
+        enabled: true
+      check_mode: true
+      register: fail2ban_enabled
+      failed_when: fail2ban_enabled.changed
+
+    - name: Verify redis is running
+      ansible.builtin.systemd:
+        name: redis-server
+        state: started
+      check_mode: true
+      register: redis_status
+      failed_when: redis_status.changed
+
+    - name: Verify redis is enabled
+      ansible.builtin.systemd:
+        name: redis-server
+        enabled: true
+      check_mode: true
+      register: redis_enabled
+      failed_when: redis_enabled.changed
+
+    - name: Verify certbot is installed
+      ansible.builtin.command:
+        cmd: certbot --version
+      changed_when: false
+
+    - name: Verify base packages are installed
+      ansible.builtin.package:
+        name: '{{ item }}'
+        state: present
+      check_mode: true
+      register: pkg_check
+      loop:
+        - acl
+        - gnupg
+        - cron
+        - fail2ban
+        - unzip
+      failed_when: pkg_check.changed

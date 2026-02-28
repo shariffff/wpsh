@@ -1,0 +1,58 @@
+# WordMon Project .gitignore
+
+# WordMon state database
+.wordmon.db
+
+# CLI Binaries
+cli/wordmon
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binaries
+*.test
+
+# Go coverage
+*.out
+
+# Go dependencies
+vendor/
+go.work
+
+# Build artifacts
+bin/
+dist/
+build/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Ansible
+*.retry
+ansible/*.retry
+.vault_pass
+*.pyc
+__pycache__/
+
+# User configuration (should be in ~/.wordmon/)
+wordmon.yaml
+config.yaml
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+.tmp/

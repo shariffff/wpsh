@@ -1,0 +1,3 @@
+---
+nginx_repo_url: "http://nginx.org/packages/ubuntu {{ ansible_distribution_release }} nginx"
+nginx_worker_connections: 8000

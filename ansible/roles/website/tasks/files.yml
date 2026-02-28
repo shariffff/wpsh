@@ -1,0 +1,32 @@
+---
+- name: Ensure site directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ site_user }}"
+    group: "{{ site_group }}"
+    mode: "0755"
+  loop:
+    - "{{ site_home }}"
+    - "{{ site_home }}/files"
+    - "{{ site_home }}/logs"
+    - "{{ site_home }}/.local/bin"
+    - "{{ site_home }}/.ssh"
+    - "{{ site_home }}/.wp-cli"
+
+- name: Set ACL for site directory
+  acl:
+    path: "{{ site_home }}"
+    entity: "{{ site_group }}"
+    etype: group
+    permissions: "---"
+    state: present
+    follow: true
+
+- name: Symlink PHP binary
+  ansible.builtin.file:
+    src: "/usr/bin/php{{ php_version }}"
+    dest: "{{ site_home }}/.local/bin/php"
+    state: link
+    owner: "{{ site_user }}"
+    group: "{{ site_group }}"

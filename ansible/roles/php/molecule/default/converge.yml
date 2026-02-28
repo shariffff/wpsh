@@ -1,0 +1,6 @@
+---
+- name: Converge - PHP Role
+  hosts: all
+  become: true
+  roles:
+    - role: php

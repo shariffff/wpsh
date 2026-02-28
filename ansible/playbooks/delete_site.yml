@@ -1,0 +1,94 @@
+---
+- name: Delete WordPress Site
+  hosts: webservers
+  become: true
+  vars:
+    db_name: '{{ site_id }}'
+    db_user: '{{ site_id }}'
+    site_user: '{{ site_id }}'
+    site_group: '{{ site_id }}'
+    site_home: '/sites/{{ site_domain }}'
+
+  pre_tasks:
+    - name: Validate required variables
+      ansible.builtin.assert:
+        that:
+          - site_id is defined and site_id | length > 0
+          - site_domain is defined and site_domain | length > 0
+          - db_host is defined and db_host | length > 0
+        fail_msg: |
+          Required variables are missing or empty. Please provide:
+            - site_id: Site identifier
+            - site_domain: Domain name of the site to delete
+            - db_host: Database host (e.g., localhost or localhost:3306)
+          Pass these via --extra-vars
+
+  tasks:
+    - name: Remove cron job
+      ansible.builtin.cron:
+        name: '{{ site_domain }}'
+        state: absent
+      ignore_errors: true
+
+    - name: Remove WordPress files
+      ansible.builtin.file:
+        path: '{{ site_home }}/files'
+        state: absent
+
+    - name: Drop MySQL database
+      community.mysql.mysql_db:
+        name: '{{ db_name }}'
+        state: absent
+        login_host: "{{ db_host.split(':')[0] }}"
+        login_port: "{{ db_host.split(':')[1] | default('3306') }}"
+        config_file: /home/wordmon/.my.cnf
+      ignore_errors: true
+
+    - name: Drop MySQL user
+      community.mysql.mysql_user:
+        name: '{{ db_user }}'
+        state: absent
+        login_host: "{{ db_host.split(':')[0] }}"
+        login_port: "{{ db_host.split(':')[1] | default('3306') }}"
+        config_file: /home/wordmon/.my.cnf
+      ignore_errors: true
+
+    - name: Remove site directories
+      ansible.builtin.file:
+        path: '{{ site_home }}'
+        state: absent
+
+    - name: Remove Nginx site configuration
+      ansible.builtin.file:
+        path: '/etc/nginx/sites-enabled/{{ site_domain }}.conf'
+        state: absent
+      notify: Reload nginx
+
+    - name: Remove PHP-FPM pool configuration
+      ansible.builtin.file:
+        path: '/etc/php/8.3/fpm/pool.d/{{ site_id }}.conf'
+        state: absent
+      notify: Reload php-fpm
+
+    - name: Remove site user
+      ansible.builtin.user:
+        name: '{{ site_user }}'
+        state: absent
+        remove: true
+
+    - name: Remove site group
+      ansible.builtin.group:
+        name: '{{ site_group }}'
+        state: absent
+      ignore_errors: true
+
+  handlers:
+    - name: Reload nginx
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
+
+    - name: Reload php-fpm
+      ansible.builtin.service:
+        name: php8.3-fpm
+        state: reloaded

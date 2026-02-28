@@ -1,0 +1,81 @@
+---
+- name: Verify - PHP Role
+  hosts: all
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Verify php8.3-fpm is installed
+      ansible.builtin.package:
+        name: php8.3-fpm
+        state: present
+      check_mode: true
+      register: php_pkg
+      failed_when: php_pkg.changed
+
+    - name: Verify php8.3-fpm is running
+      ansible.builtin.systemd:
+        name: php8.3-fpm
+        state: started
+      check_mode: true
+      register: php_status
+      failed_when: php_status.changed
+
+    - name: Verify php8.3-fpm is enabled
+      ansible.builtin.systemd:
+        name: php8.3-fpm
+        enabled: true
+      check_mode: true
+      register: php_enabled
+      failed_when: php_enabled.changed
+
+    - name: Get PHP version
+      ansible.builtin.command:
+        cmd: php -v
+      register: php_version
+      changed_when: false
+      failed_when: "'PHP 8.3' not in php_version.stdout"
+
+    - name: Verify WP-CLI is installed
+      ansible.builtin.command:
+        cmd: wp --version
+      changed_when: false
+
+    - name: Verify WP-CLI is accessible globally
+      ansible.builtin.stat:
+        path: /usr/local/bin/wp
+      register: wp_cli
+      failed_when: not wp_cli.stat.exists or not wp_cli.stat.executable
+
+    - name: Verify Composer is installed
+      ansible.builtin.command:
+        cmd: composer --version
+      changed_when: false
+
+    - name: Verify required PHP extensions are loaded
+      ansible.builtin.command:
+        cmd: php -m
+      register: php_modules
+      changed_when: false
+      failed_when: >
+        'mysqli' not in php_modules.stdout or
+        'curl' not in php_modules.stdout or
+        'mbstring' not in php_modules.stdout or
+        'xml' not in php_modules.stdout or
+        'zip' not in php_modules.stdout or
+        'gd' not in php_modules.stdout or
+        'redis' not in php_modules.stdout or
+        'intl' not in php_modules.stdout or
+        'imagick' not in php_modules.stdout or
+        'bcmath' not in php_modules.stdout
+
+    - name: Verify PHP-FPM pool directory exists
+      ansible.builtin.stat:
+        path: /etc/php/8.3/fpm/pool.d
+      register: pool_dir
+      failed_when: not pool_dir.stat.exists or not pool_dir.stat.isdir
+
+    - name: Verify www pool config exists
+      ansible.builtin.stat:
+        path: /etc/php/8.3/fpm/pool.d/www.conf
+      register: www_pool
+      failed_when: not www_pool.stat.exists

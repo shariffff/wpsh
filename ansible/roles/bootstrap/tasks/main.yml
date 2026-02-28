@@ -1,0 +1,104 @@
+---
+- name: Setup WordMon user
+  ansible.builtin.import_tasks: wordmon-user.yml
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 300
+
+- name: Installing required packages
+  ansible.builtin.apt:
+    name: '{{ required_packages }}'
+    state: present
+    cache_valid_time: 3600
+
+- name: Add Certbot cronjob for Certificate renewal
+  ansible.builtin.cron:
+    name: 'Certbot Renew'
+    special_time: daily
+    job: certbot renew >/dev/null 2>&1
+    state: present
+
+- name: Create certbot directory
+  ansible.builtin.file:
+    path: /etc/letsencrypt/renewal-hooks/post/
+    state: directory
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=
+
+- name: Add Certbot NGINX Deploy Hook
+  ansible.builtin.copy:
+    dest: /etc/letsencrypt/renewal-hooks/post/certbot_nginx.sh
+    owner: root
+    group: root
+    mode: u=rx,g=,o=
+    content: |
+      #!/bin/bash
+      systemctl reload nginx.service && echo "Success: systemctl reload nginx.service" || echo "Failed: systemctl reload nginx.service"
+
+- name: Remove unnecessary packages
+  ansible.builtin.apt:
+    name: '{{ packages_to_remove }}'
+    state: absent
+    purge: true
+
+- name: Configure locale
+  locale_gen:
+    name: en_US.UTF-8
+    state: present
+
+- name: Set environment variables
+  lineinfile:
+    path: /etc/environment
+    regexp: '^{{ item.key }}='
+    line: '{{ item.key }}={{ item.value }}'
+    state: present
+  with_items:
+    - { key: 'LANGUAGE', value: 'en_US.UTF-8' }
+    - { key: 'LC_ALL', value: 'en_US.UTF-8' }
+    - { key: 'LC_CTYPE', value: 'en_US.UTF-8' }
+    - { key: 'LANG', value: 'en_US.UTF-8' }
+
+- name: Set timezone
+  timezone:
+    name: UTC
+
+- name: Start and enable fail2ban
+  ansible.builtin.systemd:
+    name: fail2ban
+    state: started
+    enabled: true
+
+- name: Start and enable redis-server
+  ansible.builtin.systemd:
+    name: redis-server
+    state: started
+    enabled: true
+
+- name: Create site-users group
+  group:
+    name: site-users
+    state: present
+
+- name: Create sites directory
+  ansible.builtin.file:
+    path: /sites
+    state: directory
+    mode: '0755'
+
+- name: Remove ACL for site-users on /home
+  acl:
+    path: /home
+    entity: site-users
+    etype: group
+    state: absent
+
+- name: Allow traverse-only access to /sites for site-users
+  acl:
+    path: /sites
+    entity: site-users
+    etype: group
+    permissions: x
+    state: present

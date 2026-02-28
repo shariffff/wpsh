@@ -1,0 +1,97 @@
+---
+# PHP Role - Default Variables
+# Override these in group_vars/all.yml or via --extra-vars
+
+# PHP version to install (e.g., "8.3", "8.2", "8.1")
+php_version: "8.3"
+
+# PHP extensions to install (without version prefix)
+php_extensions:
+  - bcmath
+  - cli
+  - common
+  - curl
+  - gd
+  - igbinary
+  - imagick
+  - intl
+  - mbstring
+  - mysql
+  - opcache
+  - redis
+  - soap
+  - xml
+  - zip
+  - fpm
+
+# PHP-FPM configuration
+php_fpm_pm: "ondemand"
+php_fpm_max_children: 50
+php_fpm_start_servers: 5
+php_fpm_min_spare_servers: 5
+php_fpm_max_spare_servers: 35
+
+# PHP limits
+php_upload_max_filesize: "64M"
+php_post_max_size: "64M"
+php_memory_limit: "256M"
+php_max_execution_time: 300
+php_max_input_vars: 3000
+
+# PHP disabled functions for security
+# These functions are commonly exploited in WordPress attacks
+# Remove functions from this list only if your application requires them
+php_disabled_functions:
+  - disk_free_space
+  - disk_total_space
+  - diskfreespace
+  - dl
+  - exec
+  - opcache_get_configuration
+  - opcache_get_status
+  - passthru
+  - pclose
+  - pcntl_alarm
+  - pcntl_exec
+  - pcntl_fork
+  - pcntl_get_last_error
+  - pcntl_getpriority
+  - pcntl_setpriority
+  - pcntl_signal
+  - pcntl_signal_dispatch
+  - pcntl_sigprocmask
+  - pcntl_sigtimedwait
+  - pcntl_sigwaitinfo
+  - pcntl_strerror
+  - pcntl_waitpid
+  - pcntl_wait
+  - pcntl_wexitstatus
+  - pcntl_wifcontinued
+  - pcntl_wifexited
+  - pcntl_wifsignaled
+  - pcntl_wifstopped
+  - pcntl_wstopsig
+  - pcntl_wtermsig
+  - popen
+  - posix_getpwuid
+  - posix_kill
+  - posix_mkfifo
+  - posix_setpgid
+  - posix_setsid
+  - posix_setuid
+  - posix_uname
+  - proc_close
+  - proc_get_status
+  - proc_nice
+  - proc_open
+  - proc_terminate
+  - shell_exec
+  - show_source
+  - system
+
+# ImageMagick PDF policy (read|write allows PDF processing for WordPress)
+imagemagick_pdf_policy: "read|write"
+
+# Install development tools
+php_install_composer: true
+php_install_wpcli: true

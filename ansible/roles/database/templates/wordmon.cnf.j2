@@ -1,0 +1,28 @@
+# {{ ansible_managed }}
+# MariaDB configuration for WordMon
+# Variables defined in roles/database/defaults/main.yml
+
+[mysqld]
+# Performance schema (disable to reduce memory on small VPS)
+performance_schema={{ 'ON' if mariadb_performance_schema else 'OFF' }}
+
+{% if not mariadb_binary_logging %}
+# Binary logging disabled (enable for replication or point-in-time recovery)
+skip-log-bin
+{% endif %}
+
+# InnoDB buffer pool (50-70% of RAM for dedicated DB servers)
+innodb_buffer_pool_size={{ mariadb_innodb_buffer_pool_size }}
+
+# Maximum connections
+max_connections={{ mariadb_max_connections }}
+
+# Character set
+character-set-server={{ mariadb_character_set }}
+collation-server={{ mariadb_collation }}
+
+{% if mariadb_slow_query_log %}
+# Slow query log for debugging
+slow_query_log=1
+long_query_time={{ mariadb_long_query_time }}
+{% endif %}

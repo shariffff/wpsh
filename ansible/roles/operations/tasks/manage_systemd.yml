@@ -1,0 +1,15 @@
+---
+- hosts: all:!localhost
+  gather_facts: false
+  become: true
+  tasks:
+    - name: "{{ service_action | capitalize }} service {{ service_unit }}"
+      ansible.builtin.systemd:
+        name: "{{ service_unit }}"
+        state: "{{ service_state }}"
+        enabled: "{{ service_enabled }}"
+      vars:
+        service_state: "{{ 'started' if service_action == 'start' else 'stopped' if service_action == 'stop' else 'restarted' if service_action == 'restart' or service_action
+          == 'reload' else omit }}"
+        service_enabled: "{{ 'yes' if service_action == 'enable' else 'no' if service_action == 'disable' else omit }}"
+      when: service_action in ['start', 'stop', 'restart', 'enable', 'disable', 'reload']

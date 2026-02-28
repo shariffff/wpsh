@@ -1,0 +1,109 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: linux
+            arch: amd64
+          - os: linux
+            arch: arm64
+          - os: darwin
+            arch: amd64
+          - os: darwin
+            arch: arm64
+          - os: windows
+            arch: amd64
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Get version
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Build
+        env:
+          GOOS: ${{ matrix.os }}
+          GOARCH: ${{ matrix.arch }}
+          CGO_ENABLED: 0
+        run: |
+          cd cli
+          BINARY_NAME="wordmon"
+          if [ "${{ matrix.os }}" = "windows" ]; then
+            BINARY_NAME="wordmon.exe"
+          fi
+
+          go build -ldflags "-X github.com/wordmon/cli/cmd.Version=${{ steps.version.outputs.VERSION }} -X github.com/wordmon/cli/cmd.CommitSHA=${GITHUB_SHA::7} -X github.com/wordmon/cli/cmd.BuildDate=$(date -u +%Y-%m-%dT%H:%M:%SZ)" -o ${BINARY_NAME} .
+
+      - name: Create archive
+        run: |
+          ARCHIVE_NAME="wordmon_${{ steps.version.outputs.VERSION }}_${{ matrix.os }}_${{ matrix.arch }}"
+          mkdir -p dist/${ARCHIVE_NAME}
+
+          # Copy binary
+          if [ "${{ matrix.os }}" = "windows" ]; then
+            cp cli/wordmon.exe dist/${ARCHIVE_NAME}/
+          else
+            cp cli/wordmon dist/${ARCHIVE_NAME}/
+          fi
+
+          # Copy ansible directory
+          cp -r ansible dist/${ARCHIVE_NAME}/
+
+          # Create archive
+          cd dist
+          if [ "${{ matrix.os }}" = "windows" ]; then
+            zip -r ${ARCHIVE_NAME}.zip ${ARCHIVE_NAME}
+            echo "ARCHIVE=${ARCHIVE_NAME}.zip" >> $GITHUB_ENV
+          else
+            tar -czvf ${ARCHIVE_NAME}.tar.gz ${ARCHIVE_NAME}
+            echo "ARCHIVE=${ARCHIVE_NAME}.tar.gz" >> $GITHUB_ENV
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wordmon_${{ steps.version.outputs.VERSION }}_${{ matrix.os }}_${{ matrix.arch }}
+          path: dist/${{ env.ARCHIVE }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get version
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: WordMon v${{ steps.version.outputs.VERSION }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: dist/**/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

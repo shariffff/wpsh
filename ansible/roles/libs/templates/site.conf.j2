@@ -1,0 +1,58 @@
+fastcgi_cache_path /cache/{{ domain }} levels=1:2 keys_zone={{ domain }}:100m inactive=1d; # {{ ansible_managed }}
+include sites-available/{{ domain }}/before/*; # {{ ansible_managed }}
+
+server {
+	listen 80; # {{ ansible_managed }}
+	listen [::]:80; # {{ ansible_managed }}
+
+	server_name {{ domain }}; # {{ ansible_managed }}
+
+    # ssl_certificate {{ ansible_managed }}
+    # ssl_certificate_key {{ ansible_managed }}
+
+	root /sites/{{ domain }}/files/;
+
+	index index.html index.php;
+
+	access_log /sites/{{ domain }}/logs/access.log;
+	error_log /sites/{{ domain }}/logs/error.log;
+
+	# Don't allow pages to be rendered in an iframe on external domains.
+	add_header X-Frame-Options "SAMEORIGIN";
+
+	# MIME sniffing prevention
+	add_header X-Content-Type-Options "nosniff";
+
+	# Enable cross-site scripting filter in supported browsers.
+	add_header X-Xss-Protection "1; mode=block";
+
+	# Limit referrer information sent with requests to third parties.
+	add_header Referrer-Policy "strict-origin-when-cross-origin";
+
+	include sites-available/{{ domain }}/server/*; # {{ ansible_managed }}
+
+	# Prevent access to hidden files
+	location ~* /\.(?!well-known\/) {
+		deny all;
+	}
+
+	# Prevent access to certain file extensions
+	location ~ \.(ini|log|conf|blade.php)$ {
+		deny all;
+	}
+
+	location / {
+		try_files $uri $uri/ /index.php?$args;
+	}
+
+	location ~ \.php$ {
+		try_files $uri =404;
+
+		include fastcgi.conf;
+		fastcgi_pass unix:/run/php/php{{ php_version }}-{{ site_id }}.sock;
+
+		include sites-available/{{ domain }}/location/*; # {{ ansible_managed }}
+	}
+}
+
+include sites-available/{{ domain }}/after/*; # {{ ansible_managed }}

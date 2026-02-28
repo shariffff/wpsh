@@ -1,0 +1,34 @@
+---
+- name: Converge - Create WordPress Website
+  hosts: all
+  become: true
+  gather_facts: true
+  vars:
+    # Required website variables
+    domain: 'test.local'
+    site_id: 'testsite'
+    wp_admin_user: 'admin'
+    wp_admin_email: 'admin@test.local'
+    wp_admin_password: 'TestAdminPass123!'
+    # Skip SSL - no real DNS in tests
+    skip_ssl: true
+    # Database connection
+    db_host: localhost
+    mysql_wordmonbot_password: 'MoleculeTestPass123!'
+
+  pre_tasks:
+    - name: Generate random credentials and set dynamic facts
+      ansible.builtin.set_fact:
+        site_user: '{{ site_id }}'
+        site_group: '{{ site_id }}'
+        site_home: '/sites/{{ domain }}'
+        db_name: '{{ site_id }}'
+        db_user: '{{ site_id }}'
+        db_pass: "{{ lookup('password', '/dev/null length=20 chars=ascii_letters,digits') }}"
+        db_prefix: "{{ lookup('password', '/dev/null length=4 chars=ascii_lowercase') }}_"
+        admin_user: '{{ wp_admin_user }}'
+        admin_email: '{{ wp_admin_email }}'
+        admin_password: '{{ wp_admin_password }}'
+
+  roles:
+    - role: website
