@@ -9,5 +9,5 @@ mysql_root_password: "{{ lookup('password', '/dev/null length=24 chars=ascii_let
 # When using the CLI, these are passed via the inventory file
 # When running Ansible directly, set them here or pass via --extra-vars
 certbot_email: ''
-mysql_wp-shbot_password: ''
-wp-sh_ssh_key: ''
+mysql_wpshbot_password: ''
+wpsh_ssh_key: ''

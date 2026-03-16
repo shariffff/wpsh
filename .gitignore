@@ -1,10 +1,10 @@
 # WPSH Project .gitignore
 
 # WPSH state database
-.wp-sh.db
+.wpsh.db
 
 # CLI Binaries
-cli/wp-sh
+cli/wpsh
 *.exe
 *.exe~
 *.dll
@@ -44,8 +44,8 @@ ansible/*.retry
 *.pyc
 __pycache__/
 
-# User configuration (should be in ~/.wp-sh/)
-wp-sh.yaml
+# User configuration (should be in ~/.wpsh/)
+wpsh.yaml
 config.yaml
 
 # Logs

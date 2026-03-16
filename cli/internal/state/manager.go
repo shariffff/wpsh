@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/wp-sh/cli/internal/config"
-	"github.com/wp-sh/cli/pkg/models"
+	"github.com/wpsh/cli/internal/config"
+	"github.com/wpsh/cli/pkg/models"
 )
 
 // Manager handles state updates to the configuration

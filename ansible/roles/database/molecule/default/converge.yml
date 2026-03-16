@@ -3,6 +3,6 @@
   hosts: all
   become: true
   vars:
-    mysql_wp-shbot_password: 'MoleculeTestPass123!'
+    mysql_wpshbot_password: 'MoleculeTestPass123!'
   roles:
     - role: database

@@ -5,29 +5,29 @@ Automated WordPress hosting on Ubuntu servers. One command to provision, one com
 ## Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/shariffff/wp-sh/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/shariffff/wpsh/main/install.sh | bash
 ```
 
 Then initialize:
 
 ```bash
-wp-sh init
+wpsh init
 ```
 
 ## Quick Start
 
 ```bash
 # 1. Add your server
-wp-sh server add
+wpsh server add
 
 # 2. Provision it (installs Nginx, PHP, MariaDB, Redis, SSL)
-wp-sh server provision myserver
+wpsh server provision myserver
 
 # 3. Create a WordPress site
-wp-sh site create
+wpsh site create
 
 # 4. Issue SSL certificate
-wp-sh domain ssl
+wpsh domain ssl
 ```
 
 ## What It Does
@@ -50,18 +50,18 @@ wp-sh domain ssl
 ## Commands
 
 ```bash
-wp-sh server add          # Add a server
-wp-sh server provision    # Provision server with LEMP stack
-wp-sh server list         # List servers
+wpsh server add          # Add a server
+wpsh server provision    # Provision server with LEMP stack
+wpsh server list         # List servers
 
-wp-sh site create         # Create WordPress site
-wp-sh site list           # List sites
-wp-sh site delete         # Delete site
+wpsh site create         # Create WordPress site
+wpsh site list           # List sites
+wpsh site delete         # Delete site
 
-wp-sh domain add          # Add domain to site
-wp-sh domain ssl          # Issue SSL certificate
+wpsh domain add          # Add domain to site
+wpsh domain ssl          # Issue SSL certificate
 
-wp-sh config show         # Show configuration
+wpsh config show         # Show configuration
 ```
 
 All commands support `--help` for details.
@@ -79,8 +79,8 @@ All commands support `--help` for details.
 ## Development
 
 ```bash
-git clone https://github.com/shariffff/wp-sh.git
-cd wp-sh
+git clone https://github.com/shariffff/wpsh.git
+cd wpsh
 make build    # Build CLI
 make test     # Run tests
 ```

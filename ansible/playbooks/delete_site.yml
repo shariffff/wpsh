@@ -41,7 +41,7 @@
         state: absent
         login_host: "{{ db_host.split(':')[0] }}"
         login_port: "{{ db_host.split(':')[1] | default('3306') }}"
-        config_file: /home/wp-sh/.my.cnf
+        config_file: /home/wpsh/.my.cnf
       ignore_errors: true
 
     - name: Drop MySQL user
@@ -50,7 +50,7 @@
         state: absent
         login_host: "{{ db_host.split(':')[0] }}"
         login_port: "{{ db_host.split(':')[1] | default('3306') }}"
-        config_file: /home/wp-sh/.my.cnf
+        config_file: /home/wpsh/.my.cnf
       ignore_errors: true
 
     - name: Remove site directories

@@ -3,7 +3,7 @@ package utils
 import (
 	"testing"
 
-	"github.com/wp-sh/cli/pkg/models"
+	"github.com/wpsh/cli/pkg/models"
 )
 
 func TestFindServerByName(t *testing.T) {

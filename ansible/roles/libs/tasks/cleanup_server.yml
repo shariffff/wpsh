@@ -58,7 +58,7 @@
 
 - name: 'Cleanup - Remove WPSH provisioned marker'
   ansible.builtin.file:
-    path: /etc/wp-sh/provisioned
+    path: /etc/wpsh/provisioned
     state: absent
   ignore_errors: true
 

@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	DefaultConfigDir  = ".wp-sh"
-	DefaultConfigFile = "wp-sh.yaml"
+	DefaultConfigDir  = ".wpsh"
+	DefaultConfigFile = "wpsh.yaml"
 )
 
 // Manager handles loading and saving configuration

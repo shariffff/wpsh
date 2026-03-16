@@ -9,12 +9,12 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
-	"github.com/wp-sh/cli/internal/ansible"
-	"github.com/wp-sh/cli/internal/config"
-	"github.com/wp-sh/cli/internal/prompt"
-	"github.com/wp-sh/cli/internal/state"
-	"github.com/wp-sh/cli/internal/utils"
-	"github.com/wp-sh/cli/pkg/models"
+	"github.com/wpsh/cli/internal/ansible"
+	"github.com/wpsh/cli/internal/config"
+	"github.com/wpsh/cli/internal/prompt"
+	"github.com/wpsh/cli/internal/state"
+	"github.com/wpsh/cli/internal/utils"
+	"github.com/wpsh/cli/pkg/models"
 )
 
 // siteCmd represents the site command
@@ -38,7 +38,7 @@ var siteCreateCmd = &cobra.Command{
 		}
 
 		if !mgr.ConfigExists() {
-			color.Red("Configuration file not found. Run 'wp-sh init' first.")
+			color.Red("Configuration file not found. Run 'wpsh init' first.")
 			os.Exit(1)
 		}
 
@@ -120,7 +120,7 @@ var siteCreateCmd = &cobra.Command{
 
 		if targetServer.Status != "provisioned" {
 			color.Red("Error: Server '%s' is not provisioned", input.ServerName)
-			fmt.Println("Provision the server first: wp-sh server provision", input.ServerName)
+			fmt.Println("Provision the server first: wpsh server provision", input.ServerName)
 			os.Exit(1)
 		}
 
@@ -232,7 +232,7 @@ var siteCreateCmd = &cobra.Command{
 			}
 			fmt.Println()
 			fmt.Println("Next steps:")
-			fmt.Printf("  1. Add www subdomain: wp-sh domain add\n")
+			fmt.Printf("  1. Add www subdomain: wpsh domain add\n")
 		} else if result.DNSStatus != nil && !result.DNSStatus.Matches {
 			// DNS doesn't match - show instructions
 			color.Yellow("\n⚠️  SSL not issued: DNS not pointing to this server")
@@ -242,24 +242,24 @@ var siteCreateCmd = &cobra.Command{
 			fmt.Println()
 			fmt.Println("   To enable HTTPS:")
 			fmt.Printf("   1. Update your DNS A record to point to %s\n", result.DNSStatus.ServerIP)
-			fmt.Printf("   2. Run: wp-sh domain ssl --server %s --site %s --domain %s\n",
+			fmt.Printf("   2. Run: wpsh domain ssl --server %s --site %s --domain %s\n",
 				input.ServerName, input.SiteID, input.Domain)
 		} else if skipSSL {
 			fmt.Println("Next steps:")
-			fmt.Printf("  1. Add www subdomain: wp-sh domain add\n")
-			fmt.Printf("  2. Issue SSL certificate: wp-sh domain ssl\n")
+			fmt.Printf("  1. Add www subdomain: wpsh domain add\n")
+			fmt.Printf("  2. Issue SSL certificate: wpsh domain ssl\n")
 		} else {
 			fmt.Println("Next steps:")
-			fmt.Printf("  1. Add www subdomain: wp-sh domain add\n")
-			fmt.Printf("  2. Issue SSL certificate: wp-sh domain ssl\n")
+			fmt.Printf("  1. Add www subdomain: wpsh domain add\n")
+			fmt.Printf("  2. Issue SSL certificate: wpsh domain ssl\n")
 		}
 	},
 }
 
 // SiteWithServer represents a site with its server name for JSON output
 type SiteWithServer struct {
-	ServerName string       `json:"server_name"`
-	Site       models.Site  `json:"site"`
+	ServerName string      `json:"server_name"`
+	Site       models.Site `json:"site"`
 }
 
 // siteListCmd represents the site list command
@@ -275,7 +275,7 @@ var siteListCmd = &cobra.Command{
 		}
 
 		if !mgr.ConfigExists() {
-			color.Red("Configuration file not found. Run 'wp-sh init' first.")
+			color.Red("Configuration file not found. Run 'wpsh init' first.")
 			os.Exit(1)
 		}
 
@@ -326,7 +326,7 @@ var siteListCmd = &cobra.Command{
 				fmt.Printf("No sites found on server '%s'\n", filterServer)
 			} else {
 				fmt.Println("No sites configured.")
-				fmt.Println("Create a site with: wp-sh site create")
+				fmt.Println("Create a site with: wpsh site create")
 			}
 			return
 		}
@@ -384,7 +384,7 @@ var siteDeleteCmd = &cobra.Command{
 		}
 
 		if !mgr.ConfigExists() {
-			color.Red("Configuration file not found. Run 'wp-sh init' first.")
+			color.Red("Configuration file not found. Run 'wpsh init' first.")
 			os.Exit(1)
 		}
 
@@ -511,7 +511,7 @@ var siteDeleteCmd = &cobra.Command{
 
 		// Prepare extra vars for delete operation
 		extraVars := map[string]interface{}{
-			"site_id": targetSite.SiteID,
+			"site_id":     targetSite.SiteID,
 			"site_domain": targetSite.PrimaryDomain,
 			"db_host":     targetSite.Database.Host,
 		}

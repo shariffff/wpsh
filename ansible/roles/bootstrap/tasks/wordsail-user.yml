@@ -11,24 +11,24 @@
     line: '%sudo ALL=(ALL:ALL) ALL'
     validate: /usr/sbin/visudo -cf %s
 
-- name: Create wp-sh user
+- name: Create wpsh user
   ansible.builtin.user:
-    name: wp-sh
+    name: wpsh
     groups: sudo
     shell: /bin/bash
     create_home: true
     state: present
 
-- name: Set up authorized key for wp-sh
+- name: Set up authorized key for wpsh
   ansible.posix.authorized_key:
-    user: wp-sh
-    key: "{{ lookup('file', wp-sh_ssh_key) if wp-sh_ssh_key is match('.*\\.(pub|pem)$') or wp-sh_ssh_key.startswith('~') or wp-sh_ssh_key.startswith('/') else wp-sh_ssh_key }}"
+    user: wpsh
+    key: "{{ lookup('file', wpsh_ssh_key) if wpsh_ssh_key is match('.*\\.(pub|pem)$') or wpsh_ssh_key.startswith('~') or wpsh_ssh_key.startswith('/') else wpsh_ssh_key }}"
     state: present
     manage_dir: true
 
-- name: Configure sudoers for wp-sh
+- name: Configure sudoers for wpsh
   ansible.builtin.copy:
-    dest: /etc/sudoers.d/00-wp-sh
-    content: 'wp-sh ALL=(ALL) NOPASSWD: ALL'
+    dest: /etc/sudoers.d/00-wpsh
+    content: 'wpsh ALL=(ALL) NOPASSWD: ALL'
     mode: '0440'
     validate: /usr/sbin/visudo -cf %s

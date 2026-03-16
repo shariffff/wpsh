@@ -10,16 +10,16 @@
 # This email will receive expiration notices and important updates
 certbot_email: "your-email@example.com"
 
-# Your SSH public key for the wp-sh user
+# Your SSH public key for the wpsh user
 # Can be either:
 #   1. File path: "~/.ssh/id_ed25519.pub" or "/path/to/key.pub"
 #   2. Key content: "ssh-ed25519 AAAA... your-key-comment"
-# Generate with: ssh-keygen -t ed25519 -C "wp-sh"
-wp-sh_ssh_key: "~/.ssh/id_ed25519.pub"
+# Generate with: ssh-keygen -t ed25519 -C "wpsh"
+wpsh_ssh_key: "~/.ssh/id_ed25519.pub"
 
-# Password for the wp-shbot MySQL user (used for database management)
+# Password for the wpshbot MySQL user (used for database management)
 # Generate a strong password (minimum 24 characters recommended)
-mysql_wp-shbot_password: "generate-a-strong-password-here"
+mysql_wpshbot_password: "generate-a-strong-password-here"
 
 # ============================================
 # OPTIONAL VARIABLES (defaults shown)

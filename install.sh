@@ -2,13 +2,13 @@
 set -e
 
 # WPSH Installer
-# Usage: curl -fsSL https://raw.githubusercontent.com/shariffff/wp-sh/main/install.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/shariffff/wpsh/main/install.sh | bash
 
-REPO="shariffff/wp-sh"
-BINARY_NAME="wp-sh"
+REPO="shariffff/wpsh"
+BINARY_NAME="wpsh"
 
 # Install directory (like Bun's ~/.bun)
-install_dir="${WORDMON_INSTALL:-$HOME/.wp-sh}"
+install_dir="${WORDMON_INSTALL:-$HOME/.wpsh}"
 bin_dir="$install_dir/bin"
 ansible_dir="$install_dir/ansible"
 
@@ -120,7 +120,7 @@ setup_shell() {
 }
 
 # Download and install
-install_wp-sh() {
+install_wpsh() {
     local os=$(detect_os)
     local arch=$(detect_arch)
     local version="${WORDMON_VERSION:-$(get_latest_version)}"
@@ -135,7 +135,7 @@ install_wp-sh() {
     echo -e "${DIM}Installing WPSH ${version} (${os}/${arch})${NC}"
 
     # Construct download URL
-    local archive_name="wp-sh_${version_num}_${os}_${arch}"
+    local archive_name="wpsh_${version_num}_${os}_${arch}"
     local filename="${archive_name}"
     if [[ "$os" = "windows" ]]; then
         filename="${filename}.zip"
@@ -202,7 +202,7 @@ main() {
     command -v curl >/dev/null 2>&1 || error "curl is required but not installed"
     command -v tar >/dev/null 2>&1 || error "tar is required but not installed"
 
-    install_wp-sh
+    install_wpsh
     setup_shell
 
     echo ""
@@ -210,9 +210,9 @@ main() {
     echo ""
     echo "Run the following to get started:"
     echo ""
-    echo -e "  ${BOLD}source ~/.$(basename $SHELL)rc && wp-sh init${NC}"
+    echo -e "  ${BOLD}source ~/.$(basename $SHELL)rc && wpsh init${NC}"
     echo ""
-    echo -e "${DIM}Or restart your terminal and run: wp-sh init${NC}"
+    echo -e "${DIM}Or restart your terminal and run: wpsh init${NC}"
     echo ""
 }
 

@@ -10,18 +10,18 @@ import (
 var completionCmd = &cobra.Command{
 	Use:   "completion [bash|zsh|fish|powershell]",
 	Short: "Generate shell completion scripts",
-	Long: `Generate shell completion scripts for wp-sh.
+	Long: `Generate shell completion scripts for wpsh.
 
 To load completions:
 
 Bash:
-  $ source <(wp-sh completion bash)
+  $ source <(wpsh completion bash)
 
   # To load completions for each session, execute once:
   # Linux:
-  $ wp-sh completion bash > /etc/bash_completion.d/wp-sh
+  $ wpsh completion bash > /etc/bash_completion.d/wpsh
   # macOS:
-  $ wp-sh completion bash > $(brew --prefix)/etc/bash_completion.d/wp-sh
+  $ wpsh completion bash > $(brew --prefix)/etc/bash_completion.d/wpsh
 
 Zsh:
   # If shell completion is not already enabled in your environment,
@@ -29,21 +29,21 @@ Zsh:
   $ echo "autoload -U compinit; compinit" >> ~/.zshrc
 
   # To load completions for each session, execute once:
-  $ wp-sh completion zsh > "${fpath[1]}/_wp-sh"
+  $ wpsh completion zsh > "${fpath[1]}/_wpsh"
 
   # You will need to start a new shell for this setup to take effect.
 
 Fish:
-  $ wp-sh completion fish | source
+  $ wpsh completion fish | source
 
   # To load completions for each session, execute once:
-  $ wp-sh completion fish > ~/.config/fish/completions/wp-sh.fish
+  $ wpsh completion fish > ~/.config/fish/completions/wpsh.fish
 
 PowerShell:
-  PS> wp-sh completion powershell | Out-String | Invoke-Expression
+  PS> wpsh completion powershell | Out-String | Invoke-Expression
 
   # To load completions for every new session, run:
-  PS> wp-sh completion powershell > wp-sh.ps1
+  PS> wpsh completion powershell > wpsh.ps1
   # and source this file from your PowerShell profile.
 `,
 	DisableFlagsInUseLine: true,

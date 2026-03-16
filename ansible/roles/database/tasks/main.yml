@@ -22,8 +22,8 @@
 # Settings include buffer pool size, max connections, character set
 - name: Configure MariaDB settings
   ansible.builtin.template:
-    src: wp-sh.cnf.j2
-    dest: /etc/mysql/conf.d/wp-sh.cnf
+    src: wpsh.cnf.j2
+    dest: /etc/mysql/conf.d/wpsh.cnf
     mode: '0644'
   notify: restart mariadb
 
@@ -49,23 +49,23 @@
 
 # Create admin user for WPSH operations
 # This user is used by the CLI for database management
-- name: Create wp-shbot MySQL admin user
+- name: Create wpshbot MySQL admin user
   community.mysql.mysql_user:
-    name: wp-shbot
+    name: wpshbot
     host: localhost
-    password: '{{ mysql_wp-shbot_password }}'
+    password: '{{ mysql_wpshbot_password }}'
     priv: '*.*:ALL,GRANT'
     state: present
     login_unix_socket: /var/run/mysqld/mysqld.sock
     plugin: mysql_native_password
     update_password: always
 
-- name: Create wp-sh MySQL user configuration
+- name: Create wpsh MySQL user configuration
   ansible.builtin.template:
-    src: .wp-sh-my.cnf.j2
-    dest: /home/wp-sh/.my.cnf
+    src: .wpsh-my.cnf.j2
+    dest: /home/wpsh/.my.cnf
     mode: '0600'
-    owner: wp-sh
+    owner: wpsh
 
 # Security hardening: Remove test database and anonymous users
 - name: Remove test database

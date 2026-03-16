@@ -1,8 +1,8 @@
 package config
 
 import (
-	"github.com/wp-sh/cli/internal/installer"
-	"github.com/wp-sh/cli/pkg/models"
+	"github.com/wpsh/cli/internal/installer"
+	"github.com/wpsh/cli/pkg/models"
 )
 
 // AnsibleConfig holds Ansible-specific configuration
@@ -36,7 +36,7 @@ func DefaultConfig() *Config {
 	// Detect ansible path dynamically
 	ansiblePath, err := installer.GetAnsiblePath()
 	if err != nil {
-		// Fallback to user's wp-sh directory
+		// Fallback to user's wpsh directory
 		ansiblePath = installer.GetAnsibleDir()
 	}
 
@@ -45,12 +45,12 @@ func DefaultConfig() *Config {
 		Ansible: AnsibleConfig{
 			Path:              ansiblePath,
 			RolesPath:         "./roles",
-			InventoryPath:     "/tmp/wp-sh-inventory-{timestamp}.ini",
+			InventoryPath:     "/tmp/wpsh-inventory-{timestamp}.ini",
 			PythonInterpreter: "/usr/bin/python3",
 		},
 		GlobalVars: map[string]interface{}{
-			"certbot_email":    "",
-			"wp-sh_ssh_key": "",
+			"certbot_email": "",
+			"wpsh_ssh_key":  "",
 		},
 		Servers: []models.Server{},
 		Backup: BackupConfig{

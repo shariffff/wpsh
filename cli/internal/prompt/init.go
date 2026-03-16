@@ -31,9 +31,9 @@ func PromptInitSetup() (*InitInput, error) {
 		defaultKeyPath := filepath.Join(homeDir, ".ssh", "id_rsa.pub")
 
 		keyPrompt := &survey.Input{
-			Message: "SSH public key file (for wp-sh user):",
+			Message: "SSH public key file (for wpsh user):",
 			Default: defaultKeyPath,
-			Help:    "Path to the SSH public key that will be authorized for the wp-sh user on servers",
+			Help:    "Path to the SSH public key that will be authorized for the wpsh user on servers",
 		}
 		if err := survey.AskOne(keyPrompt, &input.SSHPublicKey, survey.WithValidator(survey.Required)); err != nil {
 			return nil, err
@@ -46,9 +46,9 @@ func PromptInitSetup() (*InitInput, error) {
 		// Show picker with available keys
 		options := append(sshPubKeys, "Enter path manually")
 		keyPrompt := &survey.Select{
-			Message: "SSH public key (for wp-sh user):",
+			Message: "SSH public key (for wpsh user):",
 			Options: options,
-			Help:    "Select the SSH public key to authorize for the wp-sh user on servers",
+			Help:    "Select the SSH public key to authorize for the wpsh user on servers",
 		}
 		var selectedKey string
 		if err := survey.AskOne(keyPrompt, &selectedKey); err != nil {

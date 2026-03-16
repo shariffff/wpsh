@@ -6,9 +6,9 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
-	"github.com/wp-sh/cli/internal/config"
-	"github.com/wp-sh/cli/internal/installer"
-	"github.com/wp-sh/cli/internal/prompt"
+	"github.com/wpsh/cli/internal/config"
+	"github.com/wpsh/cli/internal/installer"
+	"github.com/wpsh/cli/internal/prompt"
 )
 
 // initCmd represents the init command
@@ -18,9 +18,9 @@ var initCmd = &cobra.Command{
 	Long: `Initialize WPSH by setting up configuration and copying Ansible playbooks.
 
 This command will:
-  1. Create ~/.wp-sh/ directory structure
-  2. Copy Ansible playbooks from the repository to ~/.wp-sh/ansible/
-  3. Create initial configuration file (wp-sh.yaml)
+  1. Create ~/.wpsh/ directory structure
+  2. Copy Ansible playbooks from the repository to ~/.wpsh/ansible/
+  3. Create initial configuration file (wpsh.yaml)
   4. Prompt for global settings (SSH key, certbot email)
   5. Validate the installation
 
@@ -30,13 +30,13 @@ Run this command once after installing WPSH.
 
 Examples:
   # Interactive mode
-  wp-sh init
+  wpsh init
 
   # Non-interactive mode
-  wp-sh init --ssh-public-key ~/.ssh/id_rsa.pub --certbot-email admin@example.com
+  wpsh init --ssh-public-key ~/.ssh/id_rsa.pub --certbot-email admin@example.com
 
   # Force overwrite existing configuration
-  wp-sh init --force`,
+  wpsh init --force`,
 	Run: func(cmd *cobra.Command, args []string) {
 		force, _ := cmd.Flags().GetBool("force")
 
@@ -57,7 +57,7 @@ Examples:
 			fmt.Println()
 			fmt.Println("Options:")
 			fmt.Printf("  • Edit the config:      %s %s\n", getEditor(), mgr.GetConfigPath())
-			fmt.Println("  • Overwrite config:     wp-sh init --force")
+			fmt.Println("  • Overwrite config:     wpsh init --force")
 			fmt.Println()
 			fmt.Println("Use --force to overwrite the existing configuration.")
 			os.Exit(1)
@@ -112,7 +112,7 @@ Examples:
 		cfg.Ansible.Path = installer.GetAnsibleDir()
 
 		// Set global vars from user input
-		cfg.GlobalVars["wp-sh_ssh_key"] = initInput.SSHPublicKey
+		cfg.GlobalVars["wpsh_ssh_key"] = initInput.SSHPublicKey
 		cfg.GlobalVars["certbot_email"] = initInput.CertbotEmail
 
 		if err := mgr.Save(cfg); err != nil {
@@ -149,9 +149,9 @@ Examples:
 		fmt.Printf("  %s %s\n", getEditor(), mgr.GetConfigPath())
 		fmt.Println()
 		fmt.Println("Next steps:")
-		fmt.Println("  1. Add a server:    wp-sh server add")
-		fmt.Println("  2. Provision:       wp-sh server provision <name>")
-		fmt.Println("  3. Create site:     wp-sh site create")
+		fmt.Println("  1. Add a server:    wpsh server add")
+		fmt.Println("  2. Provision:       wpsh server provision <name>")
+		fmt.Println("  3. Create site:     wpsh site create")
 		fmt.Println()
 	},
 }
@@ -194,6 +194,6 @@ func init() {
 
 	// Flags for non-interactive mode
 	initCmd.Flags().BoolP("force", "f", false, "Force overwrite existing configuration")
-	initCmd.Flags().String("ssh-public-key", "", "Path to SSH public key for wp-sh user")
+	initCmd.Flags().String("ssh-public-key", "", "Path to SSH public key for wpsh user")
 	initCmd.Flags().String("certbot-email", "", "Email for Let's Encrypt SSL certificates")
 }

@@ -1,4 +1,4 @@
-module github.com/wp-sh/cli
+module github.com/wpsh/cli
 
 go 1.24.0
 

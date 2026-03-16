@@ -12,7 +12,7 @@ WPSH is an automated WordPress hosting infrastructure using Ansible. It consists
 ## Repository Structure
 
 ```
-wp-sh/
+wpsh/
 ├── ansible/          # All Ansible playbooks and roles
 ├── cli/              # Go CLI tool
 ├── docs/             # Additional documentation
@@ -24,7 +24,7 @@ wp-sh/
 
 ## Running Ansible Playbooks Directly
 
-**Note**: Users typically interact via the CLI (`wp-sh` command), but you can run Ansible directly for testing or advanced usage.
+**Note**: Users typically interact via the CLI (`wpsh` command), but you can run Ansible directly for testing or advanced usage.
 
 ### Prerequisites
 
@@ -47,7 +47,7 @@ ansible-playbook provision.yml -i "SERVER_IP," -u root
 
 ```bash
 cd ansible
-ansible-playbook website.yml -i "SERVER_IP," -u wp-sh \
+ansible-playbook website.yml -i "SERVER_IP," -u wpsh \
   --extra-vars "domain=example.com site_id=examplecom wp_admin_user=admin wp_admin_email=admin@example.com wp_admin_password=SecurePass123"
 ```
 
@@ -56,15 +56,15 @@ ansible-playbook website.yml -i "SERVER_IP," -u wp-sh \
 ```bash
 cd ansible
 # Add domain
-ansible-playbook playbooks/domain_management.yml -i "IP," -u wp-sh \
+ansible-playbook playbooks/domain_management.yml -i "IP," -u wpsh \
   --extra-vars "operation=add_domain domain=newdomain.com site_id=sitename"
 
 # Remove domain
-ansible-playbook playbooks/domain_management.yml -i "IP," -u wp-sh \
+ansible-playbook playbooks/domain_management.yml -i "IP," -u wpsh \
   --extra-vars "operation=remove_domain domain=olddomain.com"
 
 # Issue SSL
-ansible-playbook playbooks/domain_management.yml -i "IP," -u wp-sh \
+ansible-playbook playbooks/domain_management.yml -i "IP," -u wpsh \
   --extra-vars "operation=issue_ssl domain=example.com certbot_email=admin@example.com"
 ```
 
@@ -72,7 +72,7 @@ ansible-playbook playbooks/domain_management.yml -i "IP," -u wp-sh \
 
 ```bash
 cd ansible
-ansible-playbook playbooks/delete_site.yml -i "IP," -u wp-sh \
+ansible-playbook playbooks/delete_site.yml -i "IP," -u wpsh \
   --extra-vars "site_id=examplecom"
 ```
 
@@ -149,28 +149,28 @@ make clean
 
 ```bash
 # Initialization (run once after install)
-wp-sh init
+wpsh init
 
 # Configuration management
-wp-sh config show
-wp-sh config validate
-wp-sh config edit
+wpsh config show
+wpsh config validate
+wpsh config edit
 
 # Server management
-wp-sh server add
-wp-sh server list
-wp-sh server remove <name>
-wp-sh server provision <name>
+wpsh server add
+wpsh server list
+wpsh server remove <name>
+wpsh server provision <name>
 
 # Site management
-wp-sh site create
-wp-sh site list
-wp-sh site delete
+wpsh site create
+wpsh site list
+wpsh site delete
 
 # Domain management
-wp-sh domain add
-wp-sh domain remove
-wp-sh domain ssl
+wpsh domain add
+wpsh domain remove
+wpsh domain ssl
 ```
 
 ## Architecture
@@ -185,8 +185,8 @@ wp-sh domain ssl
 
 **Roles Architecture:**
 
-- **bootstrap**: Creates `wp-sh` system user, installs base packages, certbot, fail2ban, redis
-- **database**: Installs MariaDB, creates `wp-shbot` admin user
+- **bootstrap**: Creates `wpsh` system user, installs base packages, certbot, fail2ban, redis
+- **database**: Installs MariaDB, creates `wpshbot` admin user
 - **nginx**: Installs from official repo, sets up global config, generates default SSL
 - **php**: Installs PHP 8.3 from ondrej/php PPA, configures PHP-FPM pools, installs Composer and WP-CLI
 - **security**: Configures UFW (ports 22/80/443), SSH hardening
@@ -218,14 +218,14 @@ wp-sh domain ssl
 
 ### CLI Structure (Go)
 
-**Module Path:** `github.com/wp-sh/cli`
+**Module Path:** `github.com/wpsh/cli`
 
 **Package Organization:**
 
 - `cmd/`: Cobra command definitions (root, init, config, server, site, domain, version)
 - `internal/config/`: YAML config loading/saving, validation
 - `internal/ansible/`: Ansible inventory generation and playbook execution
-- `internal/installer/`: Setup logic for copying ansible files to ~/.wp-sh/
+- `internal/installer/`: Setup logic for copying ansible files to ~/.wpsh/
 - `internal/prompt/`: Interactive prompts using survey library
 - `internal/state/`: State updates for servers/sites/domains
 - `internal/utils/`: Validation utilities
@@ -234,7 +234,7 @@ wp-sh domain ssl
 
 **State Management:**
 
-- All state stored in `~/.wp-sh/wp-sh.yaml`
+- All state stored in `~/.wpsh/wpsh.yaml`
 - Config structure: version, ansible settings, global_vars, servers array
 - Each server has: name, hostname, ip, ssh config, status, sites array
 - Each site has: domain, site_id, admin credentials, domains array
@@ -242,8 +242,8 @@ wp-sh domain ssl
 
 **Ansible Integration:**
 
-- `wp-sh init` copies ansible/ directory to `~/.wp-sh/ansible/` on first run
-- CLI detects ansible location (user's ~/.wp-sh/ansible/ or system install path)
+- `wpsh init` copies ansible/ directory to `~/.wpsh/ansible/` on first run
+- CLI detects ansible location (user's ~/.wpsh/ansible/ or system install path)
 - CLI generates temporary inventory files at runtime
 - Executes Ansible playbooks with real-time output streaming
 - Updates state after successful operations
@@ -253,11 +253,11 @@ wp-sh domain ssl
 
 Set in `ansible/group_vars/all.yml` or pass via `--extra-vars`:
 
-| Variable                  | Description                                              |
-| ------------------------- | -------------------------------------------------------- |
-| `wp-sh_ssh_key`           | SSH public key for wp-sh user (file path or key content) |
-| `mysql_wp-shbot_password` | MySQL admin password                                     |
-| `certbot_email`           | Email for Let's Encrypt                                  |
+| Variable                 | Description                                             |
+| ------------------------ | ------------------------------------------------------- |
+| `wpsh_ssh_key`           | SSH public key for wpsh user (file path or key content) |
+| `mysql_wpshbot_password` | MySQL admin password                                    |
+| `certbot_email`          | Email for Let's Encrypt                                 |
 
 For `website.yml`:
 | Variable | Description |
@@ -294,5 +294,5 @@ For `website.yml`:
 - Commands support both interactive (prompts) and non-interactive (flags) modes
 - State updates happen after successful Ansible execution
 - Validation occurs before execution (config, SSH connectivity)
-- Ansible paths resolved in order: `~/.wp-sh/ansible/` → `/usr/local/share/wp-sh/ansible/` → relative path (dev mode)
-- `wp-sh init` must be run once after installation to copy ansible files locally
+- Ansible paths resolved in order: `~/.wpsh/ansible/` → `/usr/local/share/wpsh/ansible/` → relative path (dev mode)
+- `wpsh init` must be run once after installation to copy ansible files locally

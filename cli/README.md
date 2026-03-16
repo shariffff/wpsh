@@ -5,7 +5,7 @@ A command-line interface tool for managing WordPress hosting infrastructure usin
 ## Features
 
 - **Dual Operating Modes**: Interactive prompts for manual use, script mode with flags for automation
-- **YAML-based State Management**: All configuration stored in `~/.wp-sh/wp-sh.yaml`
+- **YAML-based State Management**: All configuration stored in `~/.wpsh/wpsh.yaml`
 - **Ansible Integration**: Seamlessly executes existing Ansible playbooks
 - **Server Management**: Add, list, remove, and provision servers
 - **Site Management**: Create, list, and delete WordPress sites
@@ -41,8 +41,8 @@ make install-user
 ### Verify Installation
 
 ```bash
-wp-sh version
-wp-sh --help
+wpsh version
+wpsh --help
 ```
 
 ## Quick Start
@@ -50,27 +50,27 @@ wp-sh --help
 ### 1. Initialize Configuration
 
 ```bash
-wp-sh init
+wpsh init
 ```
 
-This creates `~/.wp-sh/wp-sh.yaml` with default settings.
+This creates `~/.wpsh/wpsh.yaml` with default settings.
 
 ### 2. Configure Ansible Path
 
-Edit `~/.wp-sh/wp-sh.yaml` and set the correct Ansible project path:
+Edit `~/.wpsh/wpsh.yaml` and set the correct Ansible project path:
 
 ```yaml
 ansible:
   path: '/Users/yourname/Projects/ansible' # Update this path
   roles_path: './roles'
-  inventory_path: '/tmp/wp-sh-inventory-{timestamp}.ini'
+  inventory_path: '/tmp/wpsh-inventory-{timestamp}.ini'
   python_interpreter: '/usr/bin/python3'
 ```
 
 ### 3. Add a Server
 
 ```bash
-wp-sh server add
+wpsh server add
 ```
 
 Follow the interactive prompts to add server details:
@@ -83,13 +83,13 @@ Follow the interactive prompts to add server details:
 ### 4. List Servers
 
 ```bash
-wp-sh server list
+wpsh server list
 ```
 
 ### 5. Validate Configuration
 
 ```bash
-wp-sh config validate
+wpsh config validate
 ```
 
 ## Operating Modes
@@ -101,7 +101,7 @@ WPSH CLI supports two modes of operation:
 When you run commands without flags, the CLI guides you through the process with interactive prompts.
 
 ```bash
-wp-sh site create
+wpsh site create
 # Prompts you for: server, domain, admin credentials
 # (site ID is auto-generated from domain)
 ```
@@ -118,7 +118,7 @@ wp-sh site create
 Provide all parameters as command-line flags for fully automated operations.
 
 ```bash
-wp-sh site create --non-interactive \
+wpsh site create --non-interactive \
   --server production-1 \
   --domain example.com \
   --admin-user admin \
@@ -146,43 +146,43 @@ wp-sh site create --non-interactive \
 
 ```bash
 # Show current configuration
-wp-sh config show
+wpsh config show
 
 # Validate configuration
-wp-sh config validate
+wpsh config validate
 
 # Edit configuration in your preferred editor
-wp-sh config edit
+wpsh config edit
 ```
 
 ### Server Management
 
 ```bash
 # Add a new server
-wp-sh server add
+wpsh server add
 
 # List all servers
-wp-sh server list
+wpsh server list
 
 # Remove a server
-wp-sh server remove <name>
+wpsh server remove <name>
 
 # Provision a server
-wp-sh server provision <name>
+wpsh server provision <name>
 
 # Provision with options
-wp-sh server provision <name> --force              # Skip confirmation
-wp-sh server provision <name> --skip-ssh-check     # Skip SSH connectivity test
+wpsh server provision <name> --force              # Skip confirmation
+wpsh server provision <name> --skip-ssh-check     # Skip SSH connectivity test
 ```
 
 ### Site Management
 
 ```bash
 # Create a new WordPress site (interactive)
-wp-sh site create
+wpsh site create
 
 # Create a site non-interactively (site-id auto-generated)
-wp-sh site create --non-interactive \
+wpsh site create --non-interactive \
   --server production-1 \
   --domain example.com \
   --admin-user admin \
@@ -190,7 +190,7 @@ wp-sh site create --non-interactive \
   --admin-password SecurePass123!
 
 # Create with explicit site-id
-wp-sh site create --non-interactive \
+wpsh site create --non-interactive \
   --server production-1 \
   --domain example.com \
   --site-id mysite \
@@ -199,38 +199,38 @@ wp-sh site create --non-interactive \
   --admin-password SecurePass123!
 
 # List all sites
-wp-sh site list
+wpsh site list
 
 # List sites on a specific server
-wp-sh site list --server production-1
+wpsh site list --server production-1
 
 # Delete a site (interactive selection)
-wp-sh site delete
+wpsh site delete
 
 # Delete a specific site (by site ID)
-wp-sh site delete --server production-1 --site mysiteid
+wpsh site delete --server production-1 --site mysiteid
 
 # Force delete without confirmation
-wp-sh site delete --server production-1 --site mysiteid --force
+wpsh site delete --server production-1 --site mysiteid --force
 ```
 
 ### Domain Management
 
 ```bash
 # Add a domain to a site (interactive)
-wp-sh domain add
+wpsh domain add
 
 # Add domain with automatic SSL
 # (prompts will ask if you want to issue SSL)
 
 # Remove a domain (interactive selection)
-wp-sh domain remove
+wpsh domain remove
 
 # Force remove without confirmation
-wp-sh domain remove --force
+wpsh domain remove --force
 
 # Issue SSL certificate for a domain (interactive)
-wp-sh domain ssl
+wpsh domain ssl
 
 # The CLI will:
 # - Show only domains without SSL
@@ -242,7 +242,7 @@ wp-sh domain ssl
 
 ## Configuration File
 
-The configuration file is located at `~/.wp-sh/wp-sh.yaml`. Here's an example structure:
+The configuration file is located at `~/.wpsh/wpsh.yaml`. Here's an example structure:
 
 ```yaml
 version: '1.0'
@@ -250,22 +250,22 @@ version: '1.0'
 ansible:
   path: '/Users/sharif/Projects/ansible'
   roles_path: './roles'
-  inventory_path: '/tmp/wp-sh-inventory-{timestamp}.ini'
+  inventory_path: '/tmp/wpsh-inventory-{timestamp}.ini'
   python_interpreter: '/usr/bin/python3'
 
 global_vars:
   certbot_email: 'admin@example.com'
-  mysql_wp-shbot_password: '${MYSQL_WORDMONBOT_PASSWORD}'
-  wp-sh_ssh_key: '~/.ssh/wp-sh_rsa.pub'
+  mysql_wpshbot_password: '${MYSQL_WORDMONBOT_PASSWORD}'
+  wpsh_ssh_key: '~/.ssh/wpsh_rsa.pub'
 
 servers:
   - name: 'production-1'
     hostname: 'prod1.example.com'
     ip: '203.0.113.10'
     ssh:
-      user: 'wp-sh'
+      user: 'wpsh'
       port: 22
-      key_file: '~/.ssh/wp-sh_rsa'
+      key_file: '~/.ssh/wpsh_rsa'
     status: 'unprovisioned'
     sites: []
 ```

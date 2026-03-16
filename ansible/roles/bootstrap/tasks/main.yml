@@ -1,6 +1,6 @@
 ---
 - name: Setup WPSH user
-  ansible.builtin.import_tasks: wp-sh-user.yml
+  ansible.builtin.import_tasks: wpsh-user.yml
 
 - name: Update apt cache
   ansible.builtin.apt:

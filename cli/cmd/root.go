@@ -20,29 +20,29 @@ var (
 
 // rootCmd represents the base command
 var rootCmd = &cobra.Command{
-	Use:   "wp-sh",
+	Use:   "wpsh",
 	Short: "WPSH - Ansible wrapper for WordPress hosting management",
 	Long: `WPSH is a CLI tool that simplifies WordPress hosting management
 by wrapping Ansible playbooks with an intuitive, interactive interface.
 
 Manage servers, sites, and domains with ease while maintaining full
-visibility into your infrastructure state via ~/.wp-sh/wp-sh.yaml
+visibility into your infrastructure state via ~/.wpsh/wpsh.yaml
 
 Examples:
   # Initialize configuration
-  wp-sh init
+  wpsh init
 
   # Add and provision a new server
-  wp-sh server provision
+  wpsh server provision
 
   # Create a WordPress site
-  wp-sh site create
+  wpsh site create
 
   # Add a domain with SSL
-  wp-sh domain add
+  wpsh domain add
 
   # List all servers
-  wp-sh server list --json`,
+  wpsh server list --json`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately

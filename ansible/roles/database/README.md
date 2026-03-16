@@ -6,7 +6,7 @@ Installs and configures MariaDB with security hardening.
 
 - Installs MariaDB server and client
 - Applies performance and security configuration
-- Creates `wp-shbot` admin user for site management
+- Creates `wpshbot` admin user for site management
 - Removes test database and anonymous users
 
 ## Variables
@@ -29,7 +29,7 @@ All variables are defined in `defaults/main.yml`.
 Set in `group_vars/all.yml`:
 
 ```yaml
-mysql_wp-shbot_password: 'your-secure-password'
+mysql_wpshbot_password: 'your-secure-password'
 ```
 
 ## Tuning Guidelines

@@ -4,17 +4,17 @@
   become: true
   gather_facts: true
   tasks:
-    - name: Verify wp-sh user exists
+    - name: Verify wpsh user exists
       ansible.builtin.user:
-        name: wp-sh
+        name: wpsh
         state: present
       check_mode: true
-      register: wp-sh_user
-      failed_when: wp-sh_user.changed
+      register: wpsh_user
+      failed_when: wpsh_user.changed
 
-    - name: Verify wp-sh user has sudo access
+    - name: Verify wpsh user has sudo access
       ansible.builtin.command:
-        cmd: sudo -l -U wp-sh
+        cmd: sudo -l -U wpsh
       register: sudo_check
       changed_when: false
       failed_when: "'NOPASSWD' not in sudo_check.stdout"

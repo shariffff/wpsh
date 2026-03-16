@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/wpsh/cli/pkg/models"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/knownhosts"
-	"github.com/wp-sh/cli/pkg/models"
 )
 
 // TestSSHConnection tests SSH connectivity to a server
@@ -65,12 +65,12 @@ func TestSSHConnection(server models.Server) error {
 	defer session.Close()
 
 	// Test command execution
-	output, err := session.CombinedOutput("echo 'wp-sh-test'")
+	output, err := session.CombinedOutput("echo 'wpsh-test'")
 	if err != nil {
 		return fmt.Errorf("test command failed: %w", err)
 	}
 
-	if strings.TrimSpace(string(output)) != "wp-sh-test" {
+	if strings.TrimSpace(string(output)) != "wpsh-test" {
 		return fmt.Errorf("unexpected test output: %s", output)
 	}
 

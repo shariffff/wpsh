@@ -4,7 +4,7 @@
        docker-build-windows-amd64
 
 # Binary name
-BINARY_NAME=wp-sh
+BINARY_NAME=wpsh
 
 # Build information
 VERSION?=dev
@@ -14,7 +14,7 @@ BUILD_DATE=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 # Go parameters
 GOBASE=$(shell pwd)
 GOBIN=$(GOBASE)/bin
-LDFLAGS=-ldflags "-X github.com/wp-sh/cli/cmd.Version=$(VERSION) -X github.com/wp-sh/cli/cmd.CommitSHA=$(COMMIT_SHA) -X github.com/wp-sh/cli/cmd.BuildDate=$(BUILD_DATE)"
+LDFLAGS=-ldflags "-X github.com/wpsh/cli/cmd.Version=$(VERSION) -X github.com/wpsh/cli/cmd.CommitSHA=$(COMMIT_SHA) -X github.com/wpsh/cli/cmd.BuildDate=$(BUILD_DATE)"
 
 # Build the binary
 build:
@@ -26,7 +26,7 @@ build:
 install: build
 	@echo "Installing $(BINARY_NAME) to /usr/local/bin..."
 	@sudo cp $(BINARY_NAME) /usr/local/bin/
-	@echo "Installation complete. Run 'wp-sh --help' to get started."
+	@echo "Installation complete. Run 'wpsh --help' to get started."
 
 # Install to current user's bin directory (no sudo required)
 install-user: build
@@ -144,18 +144,18 @@ docker-build-windows-amd64:
 		--output type=local,dest=./dist/windows-amd64 \
 		--target binary \
 		.
-	@mv ./dist/windows-amd64/wp-sh ./dist/windows-amd64/wp-sh.exe 2>/dev/null || true
+	@mv ./dist/windows-amd64/wpsh ./dist/windows-amd64/wpsh.exe 2>/dev/null || true
 	@echo "Build complete: ./dist/windows-amd64/$(BINARY_NAME).exe"
 
 # Docker build for all platforms
 docker-build-all: docker-build-linux-amd64 docker-build-linux-arm64 docker-build-darwin-amd64 docker-build-darwin-arm64 docker-build-windows-amd64
 	@echo ""
 	@echo "All platform builds complete:"
-	@echo "  ./dist/linux-amd64/wp-sh"
-	@echo "  ./dist/linux-arm64/wp-sh"
-	@echo "  ./dist/darwin-amd64/wp-sh"
-	@echo "  ./dist/darwin-arm64/wp-sh"
-	@echo "  ./dist/windows-amd64/wp-sh.exe"
+	@echo "  ./dist/linux-amd64/wpsh"
+	@echo "  ./dist/linux-arm64/wpsh"
+	@echo "  ./dist/darwin-amd64/wpsh"
+	@echo "  ./dist/darwin-arm64/wpsh"
+	@echo "  ./dist/windows-amd64/wpsh.exe"
 
 # Show help
 help:

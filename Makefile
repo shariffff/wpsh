@@ -14,7 +14,7 @@ all: build
 build:
 	@echo "Building WPSH CLI (v$(VERSION))..."
 	@cd cli && make build
-	@echo "✓ Build complete: cli/wp-sh"
+	@echo "✓ Build complete: cli/wpsh"
 
 # Install CLI to /usr/local/bin (requires sudo)
 install: build
@@ -23,7 +23,7 @@ install: build
 	@echo ""
 	@echo "✓ Installation complete!"
 	@echo ""
-	@echo "Next step: Run 'wp-sh init' to set up your environment"
+	@echo "Next step: Run 'wpsh init' to set up your environment"
 
 # Install CLI to ~/bin (no sudo required)
 install-user: build
@@ -32,7 +32,7 @@ install-user: build
 	@echo ""
 	@echo "✓ Installation complete!"
 	@echo ""
-	@echo "Next step: Run 'wp-sh init' to set up your environment"
+	@echo "Next step: Run 'wpsh init' to set up your environment"
 
 # Run all tests
 test: test-cli test-ansible
@@ -66,7 +66,7 @@ lint:
 docker-build:
 	@echo "Building WPSH CLI via Docker (v$(VERSION))..."
 	@cd cli && make docker-build VERSION=$(VERSION)
-	@echo "✓ Docker build complete: cli/wp-sh"
+	@echo "✓ Docker build complete: cli/wpsh"
 
 # Docker build for all platforms
 docker-build-all:
@@ -93,12 +93,12 @@ docker-build-windows-amd64:
 clean:
 	@echo "Cleaning build artifacts..."
 	@cd cli && make clean
-	@rm -f wp-sh
+	@rm -f wpsh
 	@echo "✓ Clean complete"
 
 # Development: quick run
 run: build
-	@./cli/wp-sh
+	@./cli/wpsh
 
 # ===== Molecule Testing =====
 
@@ -191,4 +191,4 @@ help:
 	@echo "  help                    - Show this help message"
 	@echo ""
 	@echo "Quick start:"
-	@echo "  make build && ./cli/wp-sh init"
+	@echo "  make build && ./cli/wpsh init"

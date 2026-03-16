@@ -8,13 +8,13 @@
       ansible.builtin.assert:
         that:
           - certbot_email is defined and certbot_email | length > 0
-          - mysql_wp-shbot_password is defined and mysql_wp-shbot_password | length > 0
-          - wp-sh_ssh_key is defined and wp-sh_ssh_key | length > 0
+          - mysql_wpshbot_password is defined and mysql_wpshbot_password | length > 0
+          - wpsh_ssh_key is defined and wpsh_ssh_key | length > 0
         fail_msg: |
           Required variables are missing or empty. Please set:
             - certbot_email: Email for Let's Encrypt certificates
-            - mysql_wp-shbot_password: MySQL admin password
-            - wp-sh_ssh_key: SSH public key for wp-sh user
+            - mysql_wpshbot_password: MySQL admin password
+            - wpsh_ssh_key: SSH public key for wpsh user
           Set these in group_vars/all.yml or pass via --extra-vars
   roles:
     - { role: bootstrap, tags: 'bootstrap' }

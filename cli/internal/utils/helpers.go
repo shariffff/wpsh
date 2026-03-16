@@ -3,7 +3,7 @@ package utils
 import (
 	"time"
 
-	"github.com/wp-sh/cli/pkg/models"
+	"github.com/wpsh/cli/pkg/models"
 )
 
 // FindServerByName finds a server by name in the servers slice

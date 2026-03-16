@@ -4,7 +4,7 @@ Prepares the server with base packages and the WPSH system user.
 
 ## What It Does
 
-- Creates the `wp-sh` system user for administration
+- Creates the `wpsh` system user for administration
 - Installs required system packages
 - Removes unnecessary packages (snapd, lxd)
 - Configures base services (fail2ban, redis, certbot)
@@ -39,7 +39,7 @@ All variables are defined in `defaults/main.yml`.
 Set in `group_vars/all.yml`:
 
 ```yaml
-wp-sh_ssh_key: '~/.ssh/wp-sh.pub' # or paste key directly
+wpsh_ssh_key: '~/.ssh/wpsh.pub' # or paste key directly
 ```
 
 ## Example: Add Custom Package

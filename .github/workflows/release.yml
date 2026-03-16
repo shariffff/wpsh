@@ -44,23 +44,23 @@ jobs:
           CGO_ENABLED: 0
         run: |
           cd cli
-          BINARY_NAME="wp-sh"
+          BINARY_NAME="wpsh"
           if [ "${{ matrix.os }}" = "windows" ]; then
-            BINARY_NAME="wp-sh.exe"
+            BINARY_NAME="wpsh.exe"
           fi
 
-          go build -ldflags "-X github.com/wp-sh/cli/cmd.Version=${{ steps.version.outputs.VERSION }} -X github.com/wp-sh/cli/cmd.CommitSHA=${GITHUB_SHA::7} -X github.com/wp-sh/cli/cmd.BuildDate=$(date -u +%Y-%m-%dT%H:%M:%SZ)" -o ${BINARY_NAME} .
+          go build -ldflags "-X github.com/wpsh/cli/cmd.Version=${{ steps.version.outputs.VERSION }} -X github.com/wpsh/cli/cmd.CommitSHA=${GITHUB_SHA::7} -X github.com/wpsh/cli/cmd.BuildDate=$(date -u +%Y-%m-%dT%H:%M:%SZ)" -o ${BINARY_NAME} .
 
       - name: Create archive
         run: |
-          ARCHIVE_NAME="wp-sh_${{ steps.version.outputs.VERSION }}_${{ matrix.os }}_${{ matrix.arch }}"
+          ARCHIVE_NAME="wpsh_${{ steps.version.outputs.VERSION }}_${{ matrix.os }}_${{ matrix.arch }}"
           mkdir -p dist/${ARCHIVE_NAME}
 
           # Copy binary
           if [ "${{ matrix.os }}" = "windows" ]; then
-            cp cli/wp-sh.exe dist/${ARCHIVE_NAME}/
+            cp cli/wpsh.exe dist/${ARCHIVE_NAME}/
           else
-            cp cli/wp-sh dist/${ARCHIVE_NAME}/
+            cp cli/wpsh dist/${ARCHIVE_NAME}/
           fi
 
           # Copy ansible directory
@@ -79,7 +79,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: wp-sh_${{ steps.version.outputs.VERSION }}_${{ matrix.os }}_${{ matrix.arch }}
+          name: wpsh_${{ steps.version.outputs.VERSION }}_${{ matrix.os }}_${{ matrix.arch }}
           path: dist/${{ env.ARCHIVE }}
 
   release:

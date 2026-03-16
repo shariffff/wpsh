@@ -23,7 +23,7 @@
         src: 'pool.conf.j2',
         dest: '/etc/php/{{ php_version }}/fpm/pool.d/{{ site_id }}.conf',
       }
-    - { src: 'wp-sh-pool.conf.j2', dest: '{{ site_home }}/.wp-sh-pool.conf' }
+    - { src: 'wpsh-pool.conf.j2', dest: '{{ site_home }}/.wpsh-pool.conf' }
   notify: Reload php-fpm
 
 # Flush handlers to ensure PHP-FPM picks up the new pool before nginx starts using it

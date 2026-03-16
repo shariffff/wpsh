@@ -11,7 +11,7 @@ type SSHConfig struct {
 
 // ServerCredentials holds server-specific credentials
 type ServerCredentials struct {
-	MySQLWordmonbotPassword string `yaml:"mysql_wp-shbot_password,omitempty"`
+	MySQLWordmonbotPassword string `yaml:"mysql_wpshbot_password,omitempty"`
 }
 
 // Server represents a managed server
