@@ -3,7 +3,7 @@ package utils
 import (
 	"time"
 
-	"github.com/wordmon/cli/pkg/models"
+	"github.com/wp-sh/cli/pkg/models"
 )
 
 // FindServerByName finds a server by name in the servers slice

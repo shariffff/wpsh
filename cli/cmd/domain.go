@@ -8,12 +8,12 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
-	"github.com/wordmon/cli/internal/ansible"
-	"github.com/wordmon/cli/internal/config"
-	"github.com/wordmon/cli/internal/prompt"
-	"github.com/wordmon/cli/internal/state"
-	"github.com/wordmon/cli/internal/utils"
-	"github.com/wordmon/cli/pkg/models"
+	"github.com/wp-sh/cli/internal/ansible"
+	"github.com/wp-sh/cli/internal/config"
+	"github.com/wp-sh/cli/internal/prompt"
+	"github.com/wp-sh/cli/internal/state"
+	"github.com/wp-sh/cli/internal/utils"
+	"github.com/wp-sh/cli/pkg/models"
 )
 
 // domainCmd represents the domain command
@@ -32,10 +32,10 @@ var domainAddCmd = &cobra.Command{
 
 Examples:
   # Interactive mode
-  wordmon domain add
+  wp-sh domain add
 
   # Non-interactive mode (for automation/AI agents)
-  wordmon domain add --server myserver --site mysite --domain www.example.com --ssl`,
+  wp-sh domain add --server myserver --site mysite --domain www.example.com --ssl`,
 	Run: func(cmd *cobra.Command, args []string) {
 		mgr, err := config.NewManager()
 		if err != nil {
@@ -44,7 +44,7 @@ Examples:
 		}
 
 		if !mgr.ConfigExists() {
-			outputError(cmd, "Configuration file not found", fmt.Errorf("run 'wordmon init' first"))
+			outputError(cmd, "Configuration file not found", fmt.Errorf("run 'wp-sh init' first"))
 			os.Exit(1)
 		}
 
@@ -158,7 +158,7 @@ Examples:
 			if err != nil {
 				color.Red("\n✗ SSL certificate issuance failed: %v", err)
 				fmt.Println("The domain has been added but SSL is not configured.")
-				fmt.Println("You can issue SSL later with: wordmon domain ssl")
+				fmt.Println("You can issue SSL later with: wp-sh domain ssl")
 				os.Exit(1)
 			}
 
@@ -196,7 +196,7 @@ Examples:
 			fmt.Println()
 			fmt.Printf("Domain URL:  http://%s\n", input.Domain)
 			fmt.Println()
-			fmt.Println("To issue SSL later: wordmon domain ssl")
+			fmt.Println("To issue SSL later: wp-sh domain ssl")
 		}
 	},
 }
@@ -210,10 +210,10 @@ var domainRemoveCmd = &cobra.Command{
 
 Examples:
   # Interactive mode
-  wordmon domain remove
+  wp-sh domain remove
 
   # Non-interactive mode (for automation/AI agents)
-  wordmon domain remove --server myserver --site mysite --domain www.example.com --force`,
+  wp-sh domain remove --server myserver --site mysite --domain www.example.com --force`,
 	Run: func(cmd *cobra.Command, args []string) {
 		mgr, err := config.NewManager()
 		if err != nil {
@@ -222,7 +222,7 @@ Examples:
 		}
 
 		if !mgr.ConfigExists() {
-			outputError(cmd, "Configuration file not found", fmt.Errorf("run 'wordmon init' first"))
+			outputError(cmd, "Configuration file not found", fmt.Errorf("run 'wp-sh init' first"))
 			os.Exit(1)
 		}
 
@@ -337,10 +337,10 @@ var domainSSLCmd = &cobra.Command{
 
 Examples:
   # Interactive mode
-  wordmon domain ssl
+  wp-sh domain ssl
 
   # Non-interactive mode (for automation/AI agents)
-  wordmon domain ssl --server myserver --site mysite --domain www.example.com --email admin@example.com`,
+  wp-sh domain ssl --server myserver --site mysite --domain www.example.com --email admin@example.com`,
 	Run: func(cmd *cobra.Command, args []string) {
 		mgr, err := config.NewManager()
 		if err != nil {
@@ -349,7 +349,7 @@ Examples:
 		}
 
 		if !mgr.ConfigExists() {
-			outputError(cmd, "Configuration file not found", fmt.Errorf("run 'wordmon init' first"))
+			outputError(cmd, "Configuration file not found", fmt.Errorf("run 'wp-sh init' first"))
 			os.Exit(1)
 		}
 

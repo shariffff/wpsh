@@ -15,7 +15,7 @@ import (
 
 	"github.com/briandowns/spinner"
 	"github.com/fatih/color"
-	"github.com/wordmon/cli/pkg/models"
+	"github.com/wp-sh/cli/pkg/models"
 )
 
 // ExecutionResult holds the parsed results from Ansible output
@@ -89,7 +89,7 @@ func (e *Executor) ExecutePlaybook(playbookName string, server models.Server, ex
 	}
 
 	// Generate inventory
-	inventoryPath, err := e.invGenerator.Generate(server, fmt.Sprintf("wordmon %s", playbookName), globalVars)
+	inventoryPath, err := e.invGenerator.Generate(server, fmt.Sprintf("wp-sh %s", playbookName), globalVars)
 	if err != nil {
 		return fmt.Errorf("failed to generate inventory: %w", err)
 	}
@@ -342,7 +342,7 @@ func (e *Executor) ExecutePlaybookWithResult(playbookName string, server models.
 	}
 
 	// Generate inventory
-	inventoryPath, err := e.invGenerator.Generate(server, fmt.Sprintf("wordmon %s", playbookName), globalVars)
+	inventoryPath, err := e.invGenerator.Generate(server, fmt.Sprintf("wp-sh %s", playbookName), globalVars)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate inventory: %w", err)
 	}

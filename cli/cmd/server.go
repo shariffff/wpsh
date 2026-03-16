@@ -8,12 +8,12 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
-	"github.com/wordmon/cli/internal/ansible"
-	"github.com/wordmon/cli/internal/config"
-	"github.com/wordmon/cli/internal/prompt"
-	"github.com/wordmon/cli/internal/state"
-	"github.com/wordmon/cli/internal/utils"
-	"github.com/wordmon/cli/pkg/models"
+	"github.com/wp-sh/cli/internal/ansible"
+	"github.com/wp-sh/cli/internal/config"
+	"github.com/wp-sh/cli/internal/prompt"
+	"github.com/wp-sh/cli/internal/state"
+	"github.com/wp-sh/cli/internal/utils"
+	"github.com/wp-sh/cli/pkg/models"
 )
 
 // serverCmd represents the server command
@@ -31,14 +31,14 @@ var serverAddCmd = &cobra.Command{
 	Short: "Add a new server without provisioning",
 	Long: `Add a new server to the configuration without provisioning it.
 
-For most users, use 'wordmon server provision' instead, which adds and provisions in one step.
+For most users, use 'wp-sh server provision' instead, which adds and provisions in one step.
 
 Examples:
   # Interactive mode
-  wordmon server add
+  wp-sh server add
 
   # Non-interactive mode (for automation/AI agents)
-  wordmon server add --name myserver --ip 1.2.3.4 --ssh-key ~/.ssh/id_rsa --ssh-user root`,
+  wp-sh server add --name myserver --ip 1.2.3.4 --ssh-key ~/.ssh/id_rsa --ssh-user root`,
 	Run: func(cmd *cobra.Command, args []string) {
 		mgr, err := config.NewManager()
 		if err != nil {
@@ -47,7 +47,7 @@ Examples:
 		}
 
 		if !mgr.ConfigExists() {
-			outputError(cmd, "Configuration file not found", fmt.Errorf("run 'wordmon init' first"))
+			outputError(cmd, "Configuration file not found", fmt.Errorf("run 'wp-sh init' first"))
 			os.Exit(1)
 		}
 
@@ -129,7 +129,7 @@ Examples:
 		if !isJSONOutput(cmd) {
 			fmt.Println()
 			fmt.Println("Next steps:")
-			fmt.Printf("  Provision the server: wordmon server provision %s\n", input.Name)
+			fmt.Printf("  Provision the server: wp-sh server provision %s\n", input.Name)
 		}
 	},
 }
@@ -147,7 +147,7 @@ var serverListCmd = &cobra.Command{
 		}
 
 		if !mgr.ConfigExists() {
-			color.Red("Configuration file not found. Run 'wordmon init' first.")
+			color.Red("Configuration file not found. Run 'wp-sh init' first.")
 			os.Exit(1)
 		}
 
@@ -171,7 +171,7 @@ var serverListCmd = &cobra.Command{
 
 		if len(cfg.Servers) == 0 {
 			fmt.Println("No servers configured.")
-			fmt.Println("Add and provision a server with: wordmon server provision")
+			fmt.Println("Add and provision a server with: wp-sh server provision")
 			return
 		}
 
@@ -215,11 +215,11 @@ var serverRemoveCmd = &cobra.Command{
 	Use:     "remove [name]",
 	Aliases: []string{"delete"},
 	Short:   "Remove a server from inventory",
-	Long: `Remove a server from the WordMon inventory.
+	Long: `Remove a server from the WPSH inventory.
 
 If no name is provided, you will be prompted to select a server to remove.
 
-Note: This only removes the server from the WordMon inventory. The actual server
+Note: This only removes the server from the WPSH inventory. The actual server
 and its resources will still exist in your cloud provider. You must manually
 delete the server from your cloud provider (AWS, DigitalOcean, etc.) if needed.`,
 	Args: cobra.MaximumNArgs(1),
@@ -231,7 +231,7 @@ delete the server from your cloud provider (AWS, DigitalOcean, etc.) if needed.`
 		}
 
 		if !mgr.ConfigExists() {
-			color.Red("Configuration file not found. Run 'wordmon init' first.")
+			color.Red("Configuration file not found. Run 'wp-sh init' first.")
 			os.Exit(1)
 		}
 
@@ -296,7 +296,7 @@ delete the server from your cloud provider (AWS, DigitalOcean, etc.) if needed.`
 
 		// Show warning about cloud provider
 		fmt.Println()
-		color.Yellow("Warning: This will remove '%s' from the WordMon inventory only.", serverName)
+		color.Yellow("Warning: This will remove '%s' from the WPSH inventory only.", serverName)
 		fmt.Println("The server will still exist in your cloud provider.")
 		fmt.Println("You must manually delete it from your cloud provider if needed.")
 		fmt.Println()
@@ -346,13 +346,13 @@ If a name is provided, the existing server will be provisioned.
 
 Examples:
   # Interactive mode - add and provision new server
-  wordmon server provision
+  wp-sh server provision
 
   # Provision existing server by name
-  wordmon server provision myserver
+  wp-sh server provision myserver
 
   # Non-interactive mode - add and provision new server (for automation/AI agents)
-  wordmon server provision --name myserver --ip 1.2.3.4 --ssh-key ~/.ssh/id_rsa --force`,
+  wp-sh server provision --name myserver --ip 1.2.3.4 --ssh-key ~/.ssh/id_rsa --force`,
 	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		mgr, err := config.NewManager()
@@ -362,7 +362,7 @@ Examples:
 		}
 
 		if !mgr.ConfigExists() {
-			outputError(cmd, "Configuration file not found", fmt.Errorf("run 'wordmon init' first"))
+			outputError(cmd, "Configuration file not found", fmt.Errorf("run 'wp-sh init' first"))
 			os.Exit(1)
 		}
 
@@ -392,7 +392,7 @@ Examples:
 			}
 
 			if targetServer == nil {
-				outputError(cmd, "Server not found", fmt.Errorf("server '%s' not found. Run 'wordmon server list' to see available servers", serverName))
+				outputError(cmd, "Server not found", fmt.Errorf("server '%s' not found. Run 'wp-sh server list' to see available servers", serverName))
 				os.Exit(1)
 			}
 		} else if flagName != "" && flagIP != "" {
@@ -523,7 +523,7 @@ Examples:
 		fmt.Println("  - Install Nginx, PHP 8.3, MariaDB")
 		fmt.Println("  - Configure security (UFW, Fail2ban, SSH hardening)")
 		fmt.Println("  - Set up Certbot for SSL certificates")
-		fmt.Println("  - Create wordmon user and environment")
+		fmt.Println("  - Create wp-sh user and environment")
 		fmt.Println()
 
 		force, _ := cmd.Flags().GetBool("force")
@@ -562,7 +562,7 @@ Examples:
 		}
 
 		// Validate required global vars are present
-		requiredVars := []string{"certbot_email", "wordmon_ssh_key"}
+		requiredVars := []string{"certbot_email", "wp-sh_ssh_key"}
 		for _, varName := range requiredVars {
 			val, exists := cfg.GlobalVars[varName]
 			if !exists || val == nil || fmt.Sprintf("%v", val) == "" {
@@ -570,9 +570,9 @@ Examples:
 				fmt.Println()
 				fmt.Println("Please ensure your configuration has the following global_vars set:")
 				fmt.Println("  - certbot_email: Email for Let's Encrypt certificates")
-				fmt.Println("  - wordmon_ssh_key: Path to SSH public key for wordmon user")
+				fmt.Println("  - wp-sh_ssh_key: Path to SSH public key for wp-sh user")
 				fmt.Println()
-				fmt.Println("Run 'wordmon init --force' to reconfigure, or edit your config:")
+				fmt.Println("Run 'wp-sh init --force' to reconfigure, or edit your config:")
 				fmt.Printf("  %s %s\n", getEditor(), mgr.GetConfigPath())
 				os.Exit(1)
 			}
@@ -583,7 +583,7 @@ Examples:
 		for k, v := range cfg.GlobalVars {
 			provisionVars[k] = v
 		}
-		provisionVars["mysql_wordmonbot_password"] = mysqlPassword
+		provisionVars["mysql_wp-shbot_password"] = mysqlPassword
 
 		// Create Ansible executor
 		executor := ansible.NewExecutor(cfg.Ansible.Path)
@@ -620,12 +620,12 @@ Examples:
 		color.Green("═══════════════════════════════════════════════════════")
 		fmt.Println()
 		fmt.Println("Server credentials:")
-		fmt.Printf("  MySQL wordmonbot password: %s\n", mysqlPassword)
+		fmt.Printf("  MySQL wp-shbot password: %s\n", mysqlPassword)
 		fmt.Println()
 		color.Yellow("  Save this password! It's stored in your config file.")
 		fmt.Println()
 		fmt.Println("Next steps:")
-		fmt.Println("  Create a WordPress site: wordmon site create")
+		fmt.Println("  Create a WordPress site: wp-sh site create")
 	},
 }
 
@@ -638,10 +638,10 @@ var serverHealthCheckCmd = &cobra.Command{
 
 Examples:
   # Check a specific server
-  wordmon server health-check myserver
+  wp-sh server health-check myserver
 
   # Interactively select a server to check
-  wordmon server health-check`,
+  wp-sh server health-check`,
 	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		mgr, err := config.NewManager()
@@ -651,7 +651,7 @@ Examples:
 		}
 
 		if !mgr.ConfigExists() {
-			color.Red("Configuration file not found. Run 'wordmon init' first.")
+			color.Red("Configuration file not found. Run 'wp-sh init' first.")
 			os.Exit(1)
 		}
 
@@ -726,10 +726,10 @@ var serverUpdateCmd = &cobra.Command{
 
 Examples:
   # Update a specific server
-  wordmon server update myserver
+  wp-sh server update myserver
 
   # Interactively select a server to update
-  wordmon server update`,
+  wp-sh server update`,
 	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		mgr, err := config.NewManager()
@@ -739,7 +739,7 @@ Examples:
 		}
 
 		if !mgr.ConfigExists() {
-			color.Red("Configuration file not found. Run 'wordmon init' first.")
+			color.Red("Configuration file not found. Run 'wp-sh init' first.")
 			os.Exit(1)
 		}
 

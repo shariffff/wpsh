@@ -12,27 +12,27 @@ all: build
 
 # Build CLI
 build:
-	@echo "Building WordMon CLI (v$(VERSION))..."
+	@echo "Building WPSH CLI (v$(VERSION))..."
 	@cd cli && make build
-	@echo "✓ Build complete: cli/wordmon"
+	@echo "✓ Build complete: cli/wp-sh"
 
 # Install CLI to /usr/local/bin (requires sudo)
 install: build
-	@echo "Installing WordMon CLI to /usr/local/bin..."
+	@echo "Installing WPSH CLI to /usr/local/bin..."
 	@cd cli && make install
 	@echo ""
 	@echo "✓ Installation complete!"
 	@echo ""
-	@echo "Next step: Run 'wordmon init' to set up your environment"
+	@echo "Next step: Run 'wp-sh init' to set up your environment"
 
 # Install CLI to ~/bin (no sudo required)
 install-user: build
-	@echo "Installing WordMon CLI to ~/bin..."
+	@echo "Installing WPSH CLI to ~/bin..."
 	@cd cli && make install-user
 	@echo ""
 	@echo "✓ Installation complete!"
 	@echo ""
-	@echo "Next step: Run 'wordmon init' to set up your environment"
+	@echo "Next step: Run 'wp-sh init' to set up your environment"
 
 # Run all tests
 test: test-cli test-ansible
@@ -64,13 +64,13 @@ lint:
 
 # Docker build (no Go installation required)
 docker-build:
-	@echo "Building WordMon CLI via Docker (v$(VERSION))..."
+	@echo "Building WPSH CLI via Docker (v$(VERSION))..."
 	@cd cli && make docker-build VERSION=$(VERSION)
-	@echo "✓ Docker build complete: cli/wordmon"
+	@echo "✓ Docker build complete: cli/wp-sh"
 
 # Docker build for all platforms
 docker-build-all:
-	@echo "Building WordMon CLI for all platforms (v$(VERSION))..."
+	@echo "Building WPSH CLI for all platforms (v$(VERSION))..."
 	@cd cli && make docker-build-all VERSION=$(VERSION)
 
 # Individual platform builds
@@ -93,12 +93,12 @@ docker-build-windows-amd64:
 clean:
 	@echo "Cleaning build artifacts..."
 	@cd cli && make clean
-	@rm -f wordmon
+	@rm -f wp-sh
 	@echo "✓ Clean complete"
 
 # Development: quick run
 run: build
-	@./cli/wordmon
+	@./cli/wp-sh
 
 # ===== Molecule Testing =====
 
@@ -152,7 +152,7 @@ test-full: test lint-yaml lint-ansible test-molecule
 
 # Show help
 help:
-	@echo "WordMon Build System"
+	@echo "WPSH Build System"
 	@echo "Version: $(VERSION)"
 	@echo ""
 	@echo "Available targets:"
@@ -191,4 +191,4 @@ help:
 	@echo "  help                    - Show this help message"
 	@echo ""
 	@echo "Quick start:"
-	@echo "  make build && ./cli/wordmon init"
+	@echo "  make build && ./cli/wp-sh init"

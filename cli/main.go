@@ -1,6 +1,6 @@
 package main
 
-import "github.com/wordmon/cli/cmd"
+import "github.com/wp-sh/cli/cmd"
 
 func main() {
 	cmd.Execute()

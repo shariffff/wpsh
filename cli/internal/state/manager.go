@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/wordmon/cli/internal/config"
-	"github.com/wordmon/cli/pkg/models"
+	"github.com/wp-sh/cli/internal/config"
+	"github.com/wp-sh/cli/pkg/models"
 )
 
 // Manager handles state updates to the configuration

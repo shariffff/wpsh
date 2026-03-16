@@ -1,11 +1,11 @@
-# WordMon CLI
+# WPSH CLI
 
-A command-line interface tool for managing WordPress hosting infrastructure using Ansible. WordMon provides both an intuitive, interactive mode for manual operations and a script mode with flags for automation and CI/CD pipelines.
+A command-line interface tool for managing WordPress hosting infrastructure using Ansible. WPSH provides both an intuitive, interactive mode for manual operations and a script mode with flags for automation and CI/CD pipelines.
 
 ## Features
 
 - **Dual Operating Modes**: Interactive prompts for manual use, script mode with flags for automation
-- **YAML-based State Management**: All configuration stored in `~/.wordmon/wordmon.yaml`
+- **YAML-based State Management**: All configuration stored in `~/.wp-sh/wp-sh.yaml`
 - **Ansible Integration**: Seamlessly executes existing Ansible playbooks
 - **Server Management**: Add, list, remove, and provision servers
 - **Site Management**: Create, list, and delete WordPress sites
@@ -41,8 +41,8 @@ make install-user
 ### Verify Installation
 
 ```bash
-wordmon version
-wordmon --help
+wp-sh version
+wp-sh --help
 ```
 
 ## Quick Start
@@ -50,27 +50,27 @@ wordmon --help
 ### 1. Initialize Configuration
 
 ```bash
-wordmon init
+wp-sh init
 ```
 
-This creates `~/.wordmon/wordmon.yaml` with default settings.
+This creates `~/.wp-sh/wp-sh.yaml` with default settings.
 
 ### 2. Configure Ansible Path
 
-Edit `~/.wordmon/wordmon.yaml` and set the correct Ansible project path:
+Edit `~/.wp-sh/wp-sh.yaml` and set the correct Ansible project path:
 
 ```yaml
 ansible:
   path: '/Users/yourname/Projects/ansible' # Update this path
   roles_path: './roles'
-  inventory_path: '/tmp/wordmon-inventory-{timestamp}.ini'
+  inventory_path: '/tmp/wp-sh-inventory-{timestamp}.ini'
   python_interpreter: '/usr/bin/python3'
 ```
 
 ### 3. Add a Server
 
 ```bash
-wordmon server add
+wp-sh server add
 ```
 
 Follow the interactive prompts to add server details:
@@ -83,25 +83,25 @@ Follow the interactive prompts to add server details:
 ### 4. List Servers
 
 ```bash
-wordmon server list
+wp-sh server list
 ```
 
 ### 5. Validate Configuration
 
 ```bash
-wordmon config validate
+wp-sh config validate
 ```
 
 ## Operating Modes
 
-WordMon CLI supports two modes of operation:
+WPSH CLI supports two modes of operation:
 
 ### Interactive Mode (Default)
 
 When you run commands without flags, the CLI guides you through the process with interactive prompts.
 
 ```bash
-wordmon site create
+wp-sh site create
 # Prompts you for: server, domain, admin credentials
 # (site ID is auto-generated from domain)
 ```
@@ -118,7 +118,7 @@ wordmon site create
 Provide all parameters as command-line flags for fully automated operations.
 
 ```bash
-wordmon site create --non-interactive \
+wp-sh site create --non-interactive \
   --server production-1 \
   --domain example.com \
   --admin-user admin \
@@ -146,43 +146,43 @@ wordmon site create --non-interactive \
 
 ```bash
 # Show current configuration
-wordmon config show
+wp-sh config show
 
 # Validate configuration
-wordmon config validate
+wp-sh config validate
 
 # Edit configuration in your preferred editor
-wordmon config edit
+wp-sh config edit
 ```
 
 ### Server Management
 
 ```bash
 # Add a new server
-wordmon server add
+wp-sh server add
 
 # List all servers
-wordmon server list
+wp-sh server list
 
 # Remove a server
-wordmon server remove <name>
+wp-sh server remove <name>
 
 # Provision a server
-wordmon server provision <name>
+wp-sh server provision <name>
 
 # Provision with options
-wordmon server provision <name> --force              # Skip confirmation
-wordmon server provision <name> --skip-ssh-check     # Skip SSH connectivity test
+wp-sh server provision <name> --force              # Skip confirmation
+wp-sh server provision <name> --skip-ssh-check     # Skip SSH connectivity test
 ```
 
 ### Site Management
 
 ```bash
 # Create a new WordPress site (interactive)
-wordmon site create
+wp-sh site create
 
 # Create a site non-interactively (site-id auto-generated)
-wordmon site create --non-interactive \
+wp-sh site create --non-interactive \
   --server production-1 \
   --domain example.com \
   --admin-user admin \
@@ -190,7 +190,7 @@ wordmon site create --non-interactive \
   --admin-password SecurePass123!
 
 # Create with explicit site-id
-wordmon site create --non-interactive \
+wp-sh site create --non-interactive \
   --server production-1 \
   --domain example.com \
   --site-id mysite \
@@ -199,38 +199,38 @@ wordmon site create --non-interactive \
   --admin-password SecurePass123!
 
 # List all sites
-wordmon site list
+wp-sh site list
 
 # List sites on a specific server
-wordmon site list --server production-1
+wp-sh site list --server production-1
 
 # Delete a site (interactive selection)
-wordmon site delete
+wp-sh site delete
 
 # Delete a specific site (by site ID)
-wordmon site delete --server production-1 --site mysiteid
+wp-sh site delete --server production-1 --site mysiteid
 
 # Force delete without confirmation
-wordmon site delete --server production-1 --site mysiteid --force
+wp-sh site delete --server production-1 --site mysiteid --force
 ```
 
 ### Domain Management
 
 ```bash
 # Add a domain to a site (interactive)
-wordmon domain add
+wp-sh domain add
 
 # Add domain with automatic SSL
 # (prompts will ask if you want to issue SSL)
 
 # Remove a domain (interactive selection)
-wordmon domain remove
+wp-sh domain remove
 
 # Force remove without confirmation
-wordmon domain remove --force
+wp-sh domain remove --force
 
 # Issue SSL certificate for a domain (interactive)
-wordmon domain ssl
+wp-sh domain ssl
 
 # The CLI will:
 # - Show only domains without SSL
@@ -242,7 +242,7 @@ wordmon domain ssl
 
 ## Configuration File
 
-The configuration file is located at `~/.wordmon/wordmon.yaml`. Here's an example structure:
+The configuration file is located at `~/.wp-sh/wp-sh.yaml`. Here's an example structure:
 
 ```yaml
 version: '1.0'
@@ -250,22 +250,22 @@ version: '1.0'
 ansible:
   path: '/Users/sharif/Projects/ansible'
   roles_path: './roles'
-  inventory_path: '/tmp/wordmon-inventory-{timestamp}.ini'
+  inventory_path: '/tmp/wp-sh-inventory-{timestamp}.ini'
   python_interpreter: '/usr/bin/python3'
 
 global_vars:
   certbot_email: 'admin@example.com'
-  mysql_wordmonbot_password: '${MYSQL_WORDMONBOT_PASSWORD}'
-  wordmon_ssh_key: '~/.ssh/wordmon_rsa.pub'
+  mysql_wp-shbot_password: '${MYSQL_WORDMONBOT_PASSWORD}'
+  wp-sh_ssh_key: '~/.ssh/wp-sh_rsa.pub'
 
 servers:
   - name: 'production-1'
     hostname: 'prod1.example.com'
     ip: '203.0.113.10'
     ssh:
-      user: 'wordmon'
+      user: 'wp-sh'
       port: 22
-      key_file: '~/.ssh/wordmon_rsa'
+      key_file: '~/.ssh/wp-sh_rsa'
     status: 'unprovisioned'
     sites: []
 ```

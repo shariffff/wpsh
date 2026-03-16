@@ -7,23 +7,23 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
-	"github.com/wordmon/cli/internal/config"
-	"github.com/wordmon/cli/internal/prompt"
+	"github.com/wp-sh/cli/internal/config"
+	"github.com/wp-sh/cli/internal/prompt"
 	"gopkg.in/yaml.v3"
 )
 
 // configCmd represents the config command
 var configCmd = &cobra.Command{
 	Use:   "config",
-	Short: "Manage wordmon configuration",
-	Long:  `Display, validate, and edit the wordmon configuration file.`,
+	Short: "Manage wp-sh configuration",
+	Long:  `Display, validate, and edit the wp-sh configuration file.`,
 }
 
 // configShowCmd represents the config show command
 var configShowCmd = &cobra.Command{
 	Use:   "show",
 	Short: "Display current configuration",
-	Long:  `Display the contents of the wordmon configuration file.`,
+	Long:  `Display the contents of the wp-sh configuration file.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		mgr, err := config.NewManager()
 		if err != nil {
@@ -33,7 +33,7 @@ var configShowCmd = &cobra.Command{
 
 		if !mgr.ConfigExists() {
 			color.Red("Configuration file not found at: %s", mgr.GetConfigPath())
-			fmt.Println("Run 'wordmon init' to create it.")
+			fmt.Println("Run 'wp-sh init' to create it.")
 			os.Exit(1)
 		}
 
@@ -59,7 +59,7 @@ var configShowCmd = &cobra.Command{
 var configValidateCmd = &cobra.Command{
 	Use:   "validate",
 	Short: "Validate configuration file",
-	Long:  `Validate the wordmon configuration file for correctness and consistency.`,
+	Long:  `Validate the wp-sh configuration file for correctness and consistency.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		mgr, err := config.NewManager()
 		if err != nil {
@@ -69,7 +69,7 @@ var configValidateCmd = &cobra.Command{
 
 		if !mgr.ConfigExists() {
 			color.Red("Configuration file not found at: %s", mgr.GetConfigPath())
-			fmt.Println("Run 'wordmon init' to create it.")
+			fmt.Println("Run 'wp-sh init' to create it.")
 			os.Exit(1)
 		}
 
@@ -121,7 +121,7 @@ var configValidateCmd = &cobra.Command{
 var configEditCmd = &cobra.Command{
 	Use:   "edit",
 	Short: "Edit configuration file in your preferred editor",
-	Long:  `Open the wordmon configuration file in your preferred editor. On first run, you'll be prompted to select an editor.`,
+	Long:  `Open the wp-sh configuration file in your preferred editor. On first run, you'll be prompted to select an editor.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		mgr, err := config.NewManager()
 		if err != nil {
@@ -131,7 +131,7 @@ var configEditCmd = &cobra.Command{
 
 		if !mgr.ConfigExists() {
 			color.Red("Configuration file not found at: %s", mgr.GetConfigPath())
-			fmt.Println("Run 'wordmon init' to create it.")
+			fmt.Println("Run 'wp-sh init' to create it.")
 			os.Exit(1)
 		}
 

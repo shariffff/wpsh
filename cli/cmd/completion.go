@@ -10,18 +10,18 @@ import (
 var completionCmd = &cobra.Command{
 	Use:   "completion [bash|zsh|fish|powershell]",
 	Short: "Generate shell completion scripts",
-	Long: `Generate shell completion scripts for wordmon.
+	Long: `Generate shell completion scripts for wp-sh.
 
 To load completions:
 
 Bash:
-  $ source <(wordmon completion bash)
+  $ source <(wp-sh completion bash)
 
   # To load completions for each session, execute once:
   # Linux:
-  $ wordmon completion bash > /etc/bash_completion.d/wordmon
+  $ wp-sh completion bash > /etc/bash_completion.d/wp-sh
   # macOS:
-  $ wordmon completion bash > $(brew --prefix)/etc/bash_completion.d/wordmon
+  $ wp-sh completion bash > $(brew --prefix)/etc/bash_completion.d/wp-sh
 
 Zsh:
   # If shell completion is not already enabled in your environment,
@@ -29,21 +29,21 @@ Zsh:
   $ echo "autoload -U compinit; compinit" >> ~/.zshrc
 
   # To load completions for each session, execute once:
-  $ wordmon completion zsh > "${fpath[1]}/_wordmon"
+  $ wp-sh completion zsh > "${fpath[1]}/_wp-sh"
 
   # You will need to start a new shell for this setup to take effect.
 
 Fish:
-  $ wordmon completion fish | source
+  $ wp-sh completion fish | source
 
   # To load completions for each session, execute once:
-  $ wordmon completion fish > ~/.config/fish/completions/wordmon.fish
+  $ wp-sh completion fish > ~/.config/fish/completions/wp-sh.fish
 
 PowerShell:
-  PS> wordmon completion powershell | Out-String | Invoke-Expression
+  PS> wp-sh completion powershell | Out-String | Invoke-Expression
 
   # To load completions for every new session, run:
-  PS> wordmon completion powershell > wordmon.ps1
+  PS> wp-sh completion powershell > wp-sh.ps1
   # and source this file from your PowerShell profile.
 `,
 	DisableFlagsInUseLine: true,

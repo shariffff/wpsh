@@ -5,13 +5,13 @@
   gather_facts: true
   tasks:
     # Bootstrap role verifications
-    - name: Verify wordmon user exists
+    - name: Verify wp-sh user exists
       ansible.builtin.user:
-        name: wordmon
+        name: wp-sh
         state: present
       check_mode: true
-      register: wordmon_user
-      failed_when: wordmon_user.changed
+      register: wp-sh_user
+      failed_when: wp-sh_user.changed
 
     - name: Verify /sites directory exists
       ansible.builtin.stat:
@@ -44,9 +44,9 @@
       register: mariadb_status
       failed_when: mariadb_status.changed
 
-    - name: Verify wordmonbot MySQL user can connect
+    - name: Verify wp-shbot MySQL user can connect
       ansible.builtin.command:
-        cmd: mysql -u wordmonbot -p'MoleculeTestPass123!' -e "SELECT 1;"
+        cmd: mysql -u wp-shbot -p'MoleculeTestPass123!' -e "SELECT 1;"
       changed_when: false
 
     - name: Verify test database was removed

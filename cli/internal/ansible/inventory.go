@@ -9,7 +9,7 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/wordmon/cli/pkg/models"
+	"github.com/wp-sh/cli/pkg/models"
 )
 
 //go:embed inventory.tmpl
@@ -55,7 +55,7 @@ func (ig *InventoryGenerator) Generate(server models.Server, command string, glo
 		homeDir = "" // Will skip home expansion if we can't get it
 	}
 
-	// Expand home directory in global vars (especially wordmon_ssh_key)
+	// Expand home directory in global vars (especially wp-sh_ssh_key)
 	for key, val := range varsMap {
 		if strings.HasPrefix(val, "~") && homeDir != "" {
 			varsMap[key] = filepath.Join(homeDir, val[1:])
@@ -86,7 +86,7 @@ func (ig *InventoryGenerator) Generate(server models.Server, command string, glo
 
 	// Generate unique filename
 	timestamp := time.Now().Format("20060102-150405")
-	outputPath := filepath.Join(ig.outputDir, fmt.Sprintf("wordmon-%s-%s.ini", server.Name, timestamp))
+	outputPath := filepath.Join(ig.outputDir, fmt.Sprintf("wp-sh-%s-%s.ini", server.Name, timestamp))
 
 	// Create output file
 	f, err := os.Create(outputPath)

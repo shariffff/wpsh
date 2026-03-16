@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-WordMon is an automated WordPress hosting infrastructure using Ansible. It consists of:
+WPSH is an automated WordPress hosting infrastructure using Ansible. It consists of:
 
 - **Ansible playbooks** (`ansible/`) for server provisioning and WordPress site management
 - **Go CLI tool** (`cli/`) that provides an interactive wrapper around Ansible playbooks
@@ -12,7 +12,7 @@ WordMon is an automated WordPress hosting infrastructure using Ansible. It consi
 ## Repository Structure
 
 ```
-wordmon/
+wp-sh/
 ├── ansible/          # All Ansible playbooks and roles
 ├── cli/              # Go CLI tool
 ├── docs/             # Additional documentation
@@ -24,7 +24,7 @@ wordmon/
 
 ## Running Ansible Playbooks Directly
 
-**Note**: Users typically interact via the CLI (`wordmon` command), but you can run Ansible directly for testing or advanced usage.
+**Note**: Users typically interact via the CLI (`wp-sh` command), but you can run Ansible directly for testing or advanced usage.
 
 ### Prerequisites
 
@@ -47,7 +47,7 @@ ansible-playbook provision.yml -i "SERVER_IP," -u root
 
 ```bash
 cd ansible
-ansible-playbook website.yml -i "SERVER_IP," -u wordmon \
+ansible-playbook website.yml -i "SERVER_IP," -u wp-sh \
   --extra-vars "domain=example.com site_id=examplecom wp_admin_user=admin wp_admin_email=admin@example.com wp_admin_password=SecurePass123"
 ```
 
@@ -56,15 +56,15 @@ ansible-playbook website.yml -i "SERVER_IP," -u wordmon \
 ```bash
 cd ansible
 # Add domain
-ansible-playbook playbooks/domain_management.yml -i "IP," -u wordmon \
+ansible-playbook playbooks/domain_management.yml -i "IP," -u wp-sh \
   --extra-vars "operation=add_domain domain=newdomain.com site_id=sitename"
 
 # Remove domain
-ansible-playbook playbooks/domain_management.yml -i "IP," -u wordmon \
+ansible-playbook playbooks/domain_management.yml -i "IP," -u wp-sh \
   --extra-vars "operation=remove_domain domain=olddomain.com"
 
 # Issue SSL
-ansible-playbook playbooks/domain_management.yml -i "IP," -u wordmon \
+ansible-playbook playbooks/domain_management.yml -i "IP," -u wp-sh \
   --extra-vars "operation=issue_ssl domain=example.com certbot_email=admin@example.com"
 ```
 
@@ -72,7 +72,7 @@ ansible-playbook playbooks/domain_management.yml -i "IP," -u wordmon \
 
 ```bash
 cd ansible
-ansible-playbook playbooks/delete_site.yml -i "IP," -u wordmon \
+ansible-playbook playbooks/delete_site.yml -i "IP," -u wp-sh \
   --extra-vars "site_id=examplecom"
 ```
 
@@ -149,28 +149,28 @@ make clean
 
 ```bash
 # Initialization (run once after install)
-wordmon init
+wp-sh init
 
 # Configuration management
-wordmon config show
-wordmon config validate
-wordmon config edit
+wp-sh config show
+wp-sh config validate
+wp-sh config edit
 
 # Server management
-wordmon server add
-wordmon server list
-wordmon server remove <name>
-wordmon server provision <name>
+wp-sh server add
+wp-sh server list
+wp-sh server remove <name>
+wp-sh server provision <name>
 
 # Site management
-wordmon site create
-wordmon site list
-wordmon site delete
+wp-sh site create
+wp-sh site list
+wp-sh site delete
 
 # Domain management
-wordmon domain add
-wordmon domain remove
-wordmon domain ssl
+wp-sh domain add
+wp-sh domain remove
+wp-sh domain ssl
 ```
 
 ## Architecture
@@ -185,8 +185,8 @@ wordmon domain ssl
 
 **Roles Architecture:**
 
-- **bootstrap**: Creates `wordmon` system user, installs base packages, certbot, fail2ban, redis
-- **database**: Installs MariaDB, creates `wordmonbot` admin user
+- **bootstrap**: Creates `wp-sh` system user, installs base packages, certbot, fail2ban, redis
+- **database**: Installs MariaDB, creates `wp-shbot` admin user
 - **nginx**: Installs from official repo, sets up global config, generates default SSL
 - **php**: Installs PHP 8.3 from ondrej/php PPA, configures PHP-FPM pools, installs Composer and WP-CLI
 - **security**: Configures UFW (ports 22/80/443), SSH hardening
@@ -218,14 +218,14 @@ wordmon domain ssl
 
 ### CLI Structure (Go)
 
-**Module Path:** `github.com/wordmon/cli`
+**Module Path:** `github.com/wp-sh/cli`
 
 **Package Organization:**
 
 - `cmd/`: Cobra command definitions (root, init, config, server, site, domain, version)
 - `internal/config/`: YAML config loading/saving, validation
 - `internal/ansible/`: Ansible inventory generation and playbook execution
-- `internal/installer/`: Setup logic for copying ansible files to ~/.wordmon/
+- `internal/installer/`: Setup logic for copying ansible files to ~/.wp-sh/
 - `internal/prompt/`: Interactive prompts using survey library
 - `internal/state/`: State updates for servers/sites/domains
 - `internal/utils/`: Validation utilities
@@ -234,7 +234,7 @@ wordmon domain ssl
 
 **State Management:**
 
-- All state stored in `~/.wordmon/wordmon.yaml`
+- All state stored in `~/.wp-sh/wp-sh.yaml`
 - Config structure: version, ansible settings, global_vars, servers array
 - Each server has: name, hostname, ip, ssh config, status, sites array
 - Each site has: domain, site_id, admin credentials, domains array
@@ -242,8 +242,8 @@ wordmon domain ssl
 
 **Ansible Integration:**
 
-- `wordmon init` copies ansible/ directory to `~/.wordmon/ansible/` on first run
-- CLI detects ansible location (user's ~/.wordmon/ansible/ or system install path)
+- `wp-sh init` copies ansible/ directory to `~/.wp-sh/ansible/` on first run
+- CLI detects ansible location (user's ~/.wp-sh/ansible/ or system install path)
 - CLI generates temporary inventory files at runtime
 - Executes Ansible playbooks with real-time output streaming
 - Updates state after successful operations
@@ -253,11 +253,11 @@ wordmon domain ssl
 
 Set in `ansible/group_vars/all.yml` or pass via `--extra-vars`:
 
-| Variable                    | Description                                                |
-| --------------------------- | ---------------------------------------------------------- |
-| `wordmon_ssh_key`           | SSH public key for wordmon user (file path or key content) |
-| `mysql_wordmonbot_password` | MySQL admin password                                       |
-| `certbot_email`             | Email for Let's Encrypt                                    |
+| Variable                  | Description                                              |
+| ------------------------- | -------------------------------------------------------- |
+| `wp-sh_ssh_key`           | SSH public key for wp-sh user (file path or key content) |
+| `mysql_wp-shbot_password` | MySQL admin password                                     |
+| `certbot_email`           | Email for Let's Encrypt                                  |
 
 For `website.yml`:
 | Variable | Description |
@@ -294,5 +294,5 @@ For `website.yml`:
 - Commands support both interactive (prompts) and non-interactive (flags) modes
 - State updates happen after successful Ansible execution
 - Validation occurs before execution (config, SSH connectivity)
-- Ansible paths resolved in order: `~/.wordmon/ansible/` → `/usr/local/share/wordmon/ansible/` → relative path (dev mode)
-- `wordmon init` must be run once after installation to copy ansible files locally
+- Ansible paths resolved in order: `~/.wp-sh/ansible/` → `/usr/local/share/wp-sh/ansible/` → relative path (dev mode)
+- `wp-sh init` must be run once after installation to copy ansible files locally

@@ -6,42 +6,42 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
-	"github.com/wordmon/cli/internal/config"
-	"github.com/wordmon/cli/internal/installer"
-	"github.com/wordmon/cli/internal/prompt"
+	"github.com/wp-sh/cli/internal/config"
+	"github.com/wp-sh/cli/internal/installer"
+	"github.com/wp-sh/cli/internal/prompt"
 )
 
 // initCmd represents the init command
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "Initialize WordMon environment",
-	Long: `Initialize WordMon by setting up configuration and copying Ansible playbooks.
+	Short: "Initialize WPSH environment",
+	Long: `Initialize WPSH by setting up configuration and copying Ansible playbooks.
 
 This command will:
-  1. Create ~/.wordmon/ directory structure
-  2. Copy Ansible playbooks from the repository to ~/.wordmon/ansible/
-  3. Create initial configuration file (wordmon.yaml)
+  1. Create ~/.wp-sh/ directory structure
+  2. Copy Ansible playbooks from the repository to ~/.wp-sh/ansible/
+  3. Create initial configuration file (wp-sh.yaml)
   4. Prompt for global settings (SSH key, certbot email)
   5. Validate the installation
 
 Note: MySQL admin passwords are generated automatically per-server during provisioning.
 
-Run this command once after installing WordMon.
+Run this command once after installing WPSH.
 
 Examples:
   # Interactive mode
-  wordmon init
+  wp-sh init
 
   # Non-interactive mode
-  wordmon init --ssh-public-key ~/.ssh/id_rsa.pub --certbot-email admin@example.com
+  wp-sh init --ssh-public-key ~/.ssh/id_rsa.pub --certbot-email admin@example.com
 
   # Force overwrite existing configuration
-  wordmon init --force`,
+  wp-sh init --force`,
 	Run: func(cmd *cobra.Command, args []string) {
 		force, _ := cmd.Flags().GetBool("force")
 
 		color.Cyan("═══════════════════════════════════════════════════════")
-		color.Cyan("  WordMon Initialization")
+		color.Cyan("  WPSH Initialization")
 		color.Cyan("═══════════════════════════════════════════════════════")
 		fmt.Println()
 
@@ -57,7 +57,7 @@ Examples:
 			fmt.Println()
 			fmt.Println("Options:")
 			fmt.Printf("  • Edit the config:      %s %s\n", getEditor(), mgr.GetConfigPath())
-			fmt.Println("  • Overwrite config:     wordmon init --force")
+			fmt.Println("  • Overwrite config:     wp-sh init --force")
 			fmt.Println()
 			fmt.Println("Use --force to overwrite the existing configuration.")
 			os.Exit(1)
@@ -112,7 +112,7 @@ Examples:
 		cfg.Ansible.Path = installer.GetAnsibleDir()
 
 		// Set global vars from user input
-		cfg.GlobalVars["wordmon_ssh_key"] = initInput.SSHPublicKey
+		cfg.GlobalVars["wp-sh_ssh_key"] = initInput.SSHPublicKey
 		cfg.GlobalVars["certbot_email"] = initInput.CertbotEmail
 
 		if err := mgr.Save(cfg); err != nil {
@@ -134,7 +134,7 @@ Examples:
 		// Success message
 		fmt.Println()
 		color.Green("═══════════════════════════════════════════════════════")
-		color.Green("  ✓ WordMon initialized successfully!")
+		color.Green("  ✓ WPSH initialized successfully!")
 		color.Green("═══════════════════════════════════════════════════════")
 		fmt.Println()
 		fmt.Println("Installation paths:")
@@ -149,9 +149,9 @@ Examples:
 		fmt.Printf("  %s %s\n", getEditor(), mgr.GetConfigPath())
 		fmt.Println()
 		fmt.Println("Next steps:")
-		fmt.Println("  1. Add a server:    wordmon server add")
-		fmt.Println("  2. Provision:       wordmon server provision <name>")
-		fmt.Println("  3. Create site:     wordmon site create")
+		fmt.Println("  1. Add a server:    wp-sh server add")
+		fmt.Println("  2. Provision:       wp-sh server provision <name>")
+		fmt.Println("  3. Create site:     wp-sh site create")
 		fmt.Println()
 	},
 }
@@ -194,6 +194,6 @@ func init() {
 
 	// Flags for non-interactive mode
 	initCmd.Flags().BoolP("force", "f", false, "Force overwrite existing configuration")
-	initCmd.Flags().String("ssh-public-key", "", "Path to SSH public key for wordmon user")
+	initCmd.Flags().String("ssh-public-key", "", "Path to SSH public key for wp-sh user")
 	initCmd.Flags().String("certbot-email", "", "Email for Let's Encrypt SSL certificates")
 }

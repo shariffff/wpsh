@@ -1,6 +1,6 @@
 ---
-- name: Setup WordMon user
-  ansible.builtin.import_tasks: wordmon-user.yml
+- name: Setup WPSH user
+  ansible.builtin.import_tasks: wp-sh-user.yml
 
 - name: Update apt cache
   ansible.builtin.apt:

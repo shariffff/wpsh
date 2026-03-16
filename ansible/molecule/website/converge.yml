@@ -14,7 +14,7 @@
     skip_ssl: true
     # Database connection
     db_host: localhost
-    mysql_wordmonbot_password: 'MoleculeTestPass123!'
+    mysql_wp-shbot_password: 'MoleculeTestPass123!'
 
   pre_tasks:
     - name: Generate random credentials and set dynamic facts

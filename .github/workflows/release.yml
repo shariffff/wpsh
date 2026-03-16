@@ -44,23 +44,23 @@ jobs:
           CGO_ENABLED: 0
         run: |
           cd cli
-          BINARY_NAME="wordmon"
+          BINARY_NAME="wp-sh"
           if [ "${{ matrix.os }}" = "windows" ]; then
-            BINARY_NAME="wordmon.exe"
+            BINARY_NAME="wp-sh.exe"
           fi
 
-          go build -ldflags "-X github.com/wordmon/cli/cmd.Version=${{ steps.version.outputs.VERSION }} -X github.com/wordmon/cli/cmd.CommitSHA=${GITHUB_SHA::7} -X github.com/wordmon/cli/cmd.BuildDate=$(date -u +%Y-%m-%dT%H:%M:%SZ)" -o ${BINARY_NAME} .
+          go build -ldflags "-X github.com/wp-sh/cli/cmd.Version=${{ steps.version.outputs.VERSION }} -X github.com/wp-sh/cli/cmd.CommitSHA=${GITHUB_SHA::7} -X github.com/wp-sh/cli/cmd.BuildDate=$(date -u +%Y-%m-%dT%H:%M:%SZ)" -o ${BINARY_NAME} .
 
       - name: Create archive
         run: |
-          ARCHIVE_NAME="wordmon_${{ steps.version.outputs.VERSION }}_${{ matrix.os }}_${{ matrix.arch }}"
+          ARCHIVE_NAME="wp-sh_${{ steps.version.outputs.VERSION }}_${{ matrix.os }}_${{ matrix.arch }}"
           mkdir -p dist/${ARCHIVE_NAME}
 
           # Copy binary
           if [ "${{ matrix.os }}" = "windows" ]; then
-            cp cli/wordmon.exe dist/${ARCHIVE_NAME}/
+            cp cli/wp-sh.exe dist/${ARCHIVE_NAME}/
           else
-            cp cli/wordmon dist/${ARCHIVE_NAME}/
+            cp cli/wp-sh dist/${ARCHIVE_NAME}/
           fi
 
           # Copy ansible directory
@@ -79,7 +79,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: wordmon_${{ steps.version.outputs.VERSION }}_${{ matrix.os }}_${{ matrix.arch }}
+          name: wp-sh_${{ steps.version.outputs.VERSION }}_${{ matrix.os }}_${{ matrix.arch }}
           path: dist/${{ env.ARCHIVE }}
 
   release:
@@ -100,7 +100,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          name: WordMon v${{ steps.version.outputs.VERSION }}
+          name: WPSH v${{ steps.version.outputs.VERSION }}
           draft: false
           prerelease: false
           generate_release_notes: true

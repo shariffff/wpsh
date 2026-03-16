@@ -1,33 +1,33 @@
-# WordMon
+# WPSH
 
 Automated WordPress hosting on Ubuntu servers. One command to provision, one command to deploy.
 
 ## Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/shariffff/wordmon/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/shariffff/wp-sh/main/install.sh | bash
 ```
 
 Then initialize:
 
 ```bash
-wordmon init
+wp-sh init
 ```
 
 ## Quick Start
 
 ```bash
 # 1. Add your server
-wordmon server add
+wp-sh server add
 
 # 2. Provision it (installs Nginx, PHP, MariaDB, Redis, SSL)
-wordmon server provision myserver
+wp-sh server provision myserver
 
 # 3. Create a WordPress site
-wordmon site create
+wp-sh site create
 
 # 4. Issue SSL certificate
-wordmon domain ssl
+wp-sh domain ssl
 ```
 
 ## What It Does
@@ -50,18 +50,18 @@ wordmon domain ssl
 ## Commands
 
 ```bash
-wordmon server add          # Add a server
-wordmon server provision    # Provision server with LEMP stack
-wordmon server list         # List servers
+wp-sh server add          # Add a server
+wp-sh server provision    # Provision server with LEMP stack
+wp-sh server list         # List servers
 
-wordmon site create         # Create WordPress site
-wordmon site list           # List sites
-wordmon site delete         # Delete site
+wp-sh site create         # Create WordPress site
+wp-sh site list           # List sites
+wp-sh site delete         # Delete site
 
-wordmon domain add          # Add domain to site
-wordmon domain ssl          # Issue SSL certificate
+wp-sh domain add          # Add domain to site
+wp-sh domain ssl          # Issue SSL certificate
 
-wordmon config show         # Show configuration
+wp-sh config show         # Show configuration
 ```
 
 All commands support `--help` for details.
@@ -79,8 +79,8 @@ All commands support `--help` for details.
 ## Development
 
 ```bash
-git clone https://github.com/shariffff/wordmon.git
-cd wordmon
+git clone https://github.com/shariffff/wp-sh.git
+cd wp-sh
 make build    # Build CLI
 make test     # Run tests
 ```

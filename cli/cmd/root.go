@@ -20,29 +20,29 @@ var (
 
 // rootCmd represents the base command
 var rootCmd = &cobra.Command{
-	Use:   "wordmon",
-	Short: "WordMon - Ansible wrapper for WordPress hosting management",
-	Long: `WordMon is a CLI tool that simplifies WordPress hosting management
+	Use:   "wp-sh",
+	Short: "WPSH - Ansible wrapper for WordPress hosting management",
+	Long: `WPSH is a CLI tool that simplifies WordPress hosting management
 by wrapping Ansible playbooks with an intuitive, interactive interface.
 
 Manage servers, sites, and domains with ease while maintaining full
-visibility into your infrastructure state via ~/.wordmon/wordmon.yaml
+visibility into your infrastructure state via ~/.wp-sh/wp-sh.yaml
 
 Examples:
   # Initialize configuration
-  wordmon init
+  wp-sh init
 
   # Add and provision a new server
-  wordmon server provision
+  wp-sh server provision
 
   # Create a WordPress site
-  wordmon site create
+  wp-sh site create
 
   # Add a domain with SSL
-  wordmon domain add
+  wp-sh domain add
 
   # List all servers
-  wordmon server list --json`,
+  wp-sh server list --json`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately

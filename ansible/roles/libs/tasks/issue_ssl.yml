@@ -186,9 +186,9 @@
   tags: issue_ssl
   notify: Reload nginx
 
-- name: Check if wordmon-redirects.conf exists
+- name: Check if wp-sh-redirects.conf exists
   ansible.builtin.stat:
-    path: /etc/nginx/sites-available/{{ domain }}/before/wordmon-redirects.conf
+    path: /etc/nginx/sites-available/{{ domain }}/before/wp-sh-redirects.conf
     get_checksum: true
     checksum_algorithm: sha1
     get_mime: true

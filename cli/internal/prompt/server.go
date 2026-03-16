@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/wordmon/cli/internal/utils"
-	"github.com/wordmon/cli/pkg/models"
+	"github.com/wp-sh/cli/internal/utils"
+	"github.com/wp-sh/cli/pkg/models"
 )
 
 // ServerInput holds the input for server creation

@@ -22,8 +22,8 @@
 # Settings include buffer pool size, max connections, character set
 - name: Configure MariaDB settings
   ansible.builtin.template:
-    src: wordmon.cnf.j2
-    dest: /etc/mysql/conf.d/wordmon.cnf
+    src: wp-sh.cnf.j2
+    dest: /etc/mysql/conf.d/wp-sh.cnf
     mode: '0644'
   notify: restart mariadb
 
@@ -47,25 +47,25 @@
     dest: /root/.my.cnf
     mode: '0600'
 
-# Create admin user for WordMon operations
+# Create admin user for WPSH operations
 # This user is used by the CLI for database management
-- name: Create wordmonbot MySQL admin user
+- name: Create wp-shbot MySQL admin user
   community.mysql.mysql_user:
-    name: wordmonbot
+    name: wp-shbot
     host: localhost
-    password: '{{ mysql_wordmonbot_password }}'
+    password: '{{ mysql_wp-shbot_password }}'
     priv: '*.*:ALL,GRANT'
     state: present
     login_unix_socket: /var/run/mysqld/mysqld.sock
     plugin: mysql_native_password
     update_password: always
 
-- name: Create wordmon MySQL user configuration
+- name: Create wp-sh MySQL user configuration
   ansible.builtin.template:
-    src: .wordmon-my.cnf.j2
-    dest: /home/wordmon/.my.cnf
+    src: .wp-sh-my.cnf.j2
+    dest: /home/wp-sh/.my.cnf
     mode: '0600'
-    owner: wordmon
+    owner: wp-sh
 
 # Security hardening: Remove test database and anonymous users
 - name: Remove test database

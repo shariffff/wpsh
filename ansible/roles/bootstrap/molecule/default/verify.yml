@@ -4,17 +4,17 @@
   become: true
   gather_facts: true
   tasks:
-    - name: Verify wordmon user exists
+    - name: Verify wp-sh user exists
       ansible.builtin.user:
-        name: wordmon
+        name: wp-sh
         state: present
       check_mode: true
-      register: wordmon_user
-      failed_when: wordmon_user.changed
+      register: wp-sh_user
+      failed_when: wp-sh_user.changed
 
-    - name: Verify wordmon user has sudo access
+    - name: Verify wp-sh user has sudo access
       ansible.builtin.command:
-        cmd: sudo -l -U wordmon
+        cmd: sudo -l -U wp-sh
       register: sudo_check
       changed_when: false
       failed_when: "'NOPASSWD' not in sudo_check.stdout"

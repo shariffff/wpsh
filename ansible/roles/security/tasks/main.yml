@@ -31,7 +31,7 @@
 # Settings defined in roles/security/defaults/main.yml
 - name: Configure SSH hardening
   ansible.builtin.template:
-    src: 00-wordmon.conf.j2
-    dest: /etc/ssh/sshd_config.d/00-wordmon.conf
+    src: 00-wp-sh.conf.j2
+    dest: /etc/ssh/sshd_config.d/00-wp-sh.conf
     mode: '0644'
   notify: restart ssh

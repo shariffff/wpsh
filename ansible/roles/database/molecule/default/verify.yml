@@ -28,14 +28,14 @@
       register: mariadb_enabled
       failed_when: mariadb_enabled.changed
 
-    - name: Verify wordmonbot MySQL user can connect
+    - name: Verify wp-shbot MySQL user can connect
       ansible.builtin.command:
-        cmd: mysql -u wordmonbot -p'MoleculeTestPass123!' -e "SELECT 1;"
+        cmd: mysql -u wp-shbot -p'MoleculeTestPass123!' -e "SELECT 1;"
       changed_when: false
 
-    - name: Verify wordmonbot has proper privileges
+    - name: Verify wp-shbot has proper privileges
       ansible.builtin.command:
-        cmd: mysql -u wordmonbot -p'MoleculeTestPass123!' -e "SHOW GRANTS;"
+        cmd: mysql -u wp-shbot -p'MoleculeTestPass123!' -e "SHOW GRANTS;"
       register: grants
       changed_when: false
       failed_when: "'ALL PRIVILEGES' not in grants.stdout"

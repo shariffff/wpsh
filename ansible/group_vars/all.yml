@@ -1,13 +1,13 @@
 ---
-# WordMon Ansible - Global Variables
+# WPSH Ansible - Global Variables
 # See inventory/group_vars/all.yml.example for documentation
 
-ansible_managed: 'Managed by WordMon'
+ansible_managed: 'Managed by WPSH'
 mysql_root_password: "{{ lookup('password', '/dev/null length=24 chars=ascii_letters,digits') }}"
 
 # REQUIRED: Set these variables before running playbooks
 # When using the CLI, these are passed via the inventory file
 # When running Ansible directly, set them here or pass via --extra-vars
 certbot_email: ''
-mysql_wordmonbot_password: ''
-wordmon_ssh_key: ''
+mysql_wp-shbot_password: ''
+wp-sh_ssh_key: ''

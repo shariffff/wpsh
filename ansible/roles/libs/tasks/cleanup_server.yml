@@ -56,9 +56,9 @@
   delay: 10
   ignore_errors: true
 
-- name: 'Cleanup - Remove WordMon provisioned marker'
+- name: 'Cleanup - Remove WPSH provisioned marker'
   ansible.builtin.file:
-    path: /etc/wordmon/provisioned
+    path: /etc/wp-sh/provisioned
     state: absent
   ignore_errors: true
 

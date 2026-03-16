@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	DefaultConfigDir  = ".wordmon"
-	DefaultConfigFile = "wordmon.yaml"
+	DefaultConfigDir  = ".wp-sh"
+	DefaultConfigFile = "wp-sh.yaml"
 )
 
 // Manager handles loading and saving configuration

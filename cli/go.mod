@@ -1,4 +1,4 @@
-module github.com/wordmon/cli
+module github.com/wp-sh/cli
 
 go 1.24.0
 

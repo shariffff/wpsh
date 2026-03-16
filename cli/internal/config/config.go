@@ -1,8 +1,8 @@
 package config
 
 import (
-	"github.com/wordmon/cli/internal/installer"
-	"github.com/wordmon/cli/pkg/models"
+	"github.com/wp-sh/cli/internal/installer"
+	"github.com/wp-sh/cli/pkg/models"
 )
 
 // AnsibleConfig holds Ansible-specific configuration
@@ -36,7 +36,7 @@ func DefaultConfig() *Config {
 	// Detect ansible path dynamically
 	ansiblePath, err := installer.GetAnsiblePath()
 	if err != nil {
-		// Fallback to user's wordmon directory
+		// Fallback to user's wp-sh directory
 		ansiblePath = installer.GetAnsibleDir()
 	}
 
@@ -45,12 +45,12 @@ func DefaultConfig() *Config {
 		Ansible: AnsibleConfig{
 			Path:              ansiblePath,
 			RolesPath:         "./roles",
-			InventoryPath:     "/tmp/wordmon-inventory-{timestamp}.ini",
+			InventoryPath:     "/tmp/wp-sh-inventory-{timestamp}.ini",
 			PythonInterpreter: "/usr/bin/python3",
 		},
 		GlobalVars: map[string]interface{}{
 			"certbot_email":    "",
-			"wordmon_ssh_key": "",
+			"wp-sh_ssh_key": "",
 		},
 		Servers: []models.Server{},
 		Backup: BackupConfig{

@@ -8,25 +8,25 @@ import (
 )
 
 const (
-	wordmonDir = ".wordmon"
+	wp-shDir = ".wp-sh"
 	ansibleDir = "ansible"
 )
 
-// GetWordmonDir returns the path to ~/.wordmon/
+// GetWordmonDir returns the path to ~/.wp-sh/
 func GetWordmonDir() string {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return ""
 	}
-	return filepath.Join(home, wordmonDir)
+	return filepath.Join(home, wp-shDir)
 }
 
-// GetAnsibleDir returns the path to ~/.wordmon/ansible/
+// GetAnsibleDir returns the path to ~/.wp-sh/ansible/
 func GetAnsibleDir() string {
 	return filepath.Join(GetWordmonDir(), ansibleDir)
 }
 
-// IsInitialized checks if ~/.wordmon/ansible/ exists and has content
+// IsInitialized checks if ~/.wp-sh/ansible/ exists and has content
 func IsInitialized() bool {
 	ansiblePath := GetAnsibleDir()
 
@@ -66,7 +66,7 @@ func DetectAnsibleSource() (string, error) {
 	}
 
 	// Try system install path (for future package installations)
-	systemPath := "/usr/local/share/wordmon/ansible"
+	systemPath := "/usr/local/share/wp-sh/ansible"
 	if _, err := os.Stat(filepath.Join(systemPath, "provision.yml")); err == nil {
 		return systemPath, nil
 	}
@@ -74,14 +74,14 @@ func DetectAnsibleSource() (string, error) {
 	return "", fmt.Errorf("could not find ansible source directory")
 }
 
-// Initialize sets up the ~/.wordmon directory and copies ansible files
+// Initialize sets up the ~/.wp-sh directory and copies ansible files
 func Initialize() error {
-	wordmonPath := GetWordmonDir()
+	wp-shPath := GetWordmonDir()
 	ansiblePath := GetAnsibleDir()
 
-	// Create ~/.wordmon/ directory
-	if err := os.MkdirAll(wordmonPath, 0755); err != nil {
-		return fmt.Errorf("failed to create %s: %w", wordmonPath, err)
+	// Create ~/.wp-sh/ directory
+	if err := os.MkdirAll(wp-shPath, 0755); err != nil {
+		return fmt.Errorf("failed to create %s: %w", wp-shPath, err)
 	}
 
 	// Find ansible source
@@ -174,7 +174,7 @@ func copyFile(src, dst string) error {
 }
 
 // GetAnsiblePath returns the path to use for ansible playbooks
-// Checks in order: ~/.wordmon/ansible/, /usr/local/share/wordmon/ansible/, relative path
+// Checks in order: ~/.wp-sh/ansible/, /usr/local/share/wp-sh/ansible/, relative path
 func GetAnsiblePath() (string, error) {
 	// First check user's local copy
 	userPath := GetAnsibleDir()
@@ -183,7 +183,7 @@ func GetAnsiblePath() (string, error) {
 	}
 
 	// Check system install
-	systemPath := "/usr/local/share/wordmon/ansible"
+	systemPath := "/usr/local/share/wp-sh/ansible"
 	if _, err := os.Stat(filepath.Join(systemPath, "provision.yml")); err == nil {
 		return systemPath, nil
 	}

@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/wordmon/cli/internal/utils"
-	"github.com/wordmon/cli/pkg/models"
+	"github.com/wp-sh/cli/internal/utils"
+	"github.com/wp-sh/cli/pkg/models"
 )
 
 // DomainAddInput holds the input for adding a domain
@@ -54,7 +54,7 @@ func PromptDomainAdd(servers []models.Server) (*DomainAddInput, error) {
 	}
 
 	if len(siteOptions) == 0 {
-		return nil, fmt.Errorf("no sites available. Create a site first with: wordmon site create")
+		return nil, fmt.Errorf("no sites available. Create a site first with: wp-sh site create")
 	}
 
 	// Select site

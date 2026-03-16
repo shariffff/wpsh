@@ -1,4 +1,4 @@
-# WordMon Ansible Playbooks
+# WPSH Ansible Playbooks
 
 Ansible playbooks and roles for automated WordPress hosting infrastructure.
 
@@ -34,7 +34,7 @@ ansible-playbook provision.yml -i "SERVER_IP," -u root
 **Create a WordPress site:**
 
 ```bash
-ansible-playbook website.yml -i "SERVER_IP," -u wordmon \
+ansible-playbook website.yml -i "SERVER_IP," -u wp-sh \
   --extra-vars "domain=example.com system_name=examplecom wp_admin_user=admin wp_admin_email=admin@example.com wp_admin_password=SecurePass123"
 ```
 
@@ -42,40 +42,40 @@ ansible-playbook website.yml -i "SERVER_IP," -u wordmon \
 
 ```bash
 # Add domain
-ansible-playbook playbooks/domain_management.yml -i "IP," -u wordmon \
+ansible-playbook playbooks/domain_management.yml -i "IP," -u wp-sh \
   --extra-vars "operation=add_domain domain=newdomain.com system_name=sitename"
 
 # Remove domain
-ansible-playbook playbooks/domain_management.yml -i "IP," -u wordmon \
+ansible-playbook playbooks/domain_management.yml -i "IP," -u wp-sh \
   --extra-vars "operation=remove_domain domain=olddomain.com"
 
 # Issue SSL certificate
-ansible-playbook playbooks/domain_management.yml -i "IP," -u wordmon \
+ansible-playbook playbooks/domain_management.yml -i "IP," -u wp-sh \
   --extra-vars "operation=issue_ssl domain=example.com certbot_email=admin@example.com"
 ```
 
 **Delete a site:**
 
 ```bash
-ansible-playbook playbooks/delete_site.yml -i "IP," -u wordmon \
+ansible-playbook playbooks/delete_site.yml -i "IP," -u wp-sh \
   --extra-vars "system_name=examplecom"
 ```
 
 ## Playbook Overview
 
-| Playbook                          | Purpose                 | User      | Required Variables               |
-| --------------------------------- | ----------------------- | --------- | -------------------------------- |
-| `provision.yml`                   | Full server setup       | `root`    | See group_vars/all.yml           |
-| `website.yml`                     | Create WordPress site   | `wordmon` | domain, system*name, wp_admin*\* |
-| `playbooks/domain_management.yml` | Add/remove domains, SSL | `wordmon` | operation, domain                |
-| `playbooks/delete_site.yml`       | Remove site completely  | `wordmon` | system_name                      |
+| Playbook                          | Purpose                 | User    | Required Variables               |
+| --------------------------------- | ----------------------- | ------- | -------------------------------- |
+| `provision.yml`                   | Full server setup       | `root`  | See group_vars/all.yml           |
+| `website.yml`                     | Create WordPress site   | `wp-sh` | domain, system*name, wp_admin*\* |
+| `playbooks/domain_management.yml` | Add/remove domains, SSL | `wp-sh` | operation, domain                |
+| `playbooks/delete_site.yml`       | Remove site completely  | `wp-sh` | system_name                      |
 
 ## Roles Architecture
 
 | Role           | Purpose              | Key Tasks                                                                              |
 | -------------- | -------------------- | -------------------------------------------------------------------------------------- |
-| **bootstrap**  | Base system setup    | Creates wordmon user, installs base packages, certbot, fail2ban, redis                 |
-| **database**   | MariaDB installation | Installs MariaDB, creates wordmonbot admin user, secures installation                  |
+| **bootstrap**  | Base system setup    | Creates wp-sh user, installs base packages, certbot, fail2ban, redis                   |
+| **database**   | MariaDB installation | Installs MariaDB, creates wp-shbot admin user, secures installation                    |
 | **nginx**      | Web server setup     | Installs Nginx from official repo, configures global settings, generates default SSL   |
 | **php**        | PHP installation     | Installs PHP 8.3 from ondrej/php PPA, configures PHP-FPM, installs Composer and WP-CLI |
 | **security**   | Security hardening   | Configures UFW firewall (ports 22/80/443), SSH hardening                               |
@@ -87,11 +87,11 @@ ansible-playbook playbooks/delete_site.yml -i "IP," -u wordmon \
 
 ### Global Variables (group_vars/all.yml)
 
-| Variable                    | Description                                                | Required |
-| --------------------------- | ---------------------------------------------------------- | -------- |
-| `wordmon_ssh_key`           | SSH public key for wordmon user (file path or key content) | Yes      |
-| `mysql_wordmonbot_password` | MySQL admin password                                       | Yes      |
-| `certbot_email`             | Email for Let's Encrypt                                    | Yes      |
+| Variable                  | Description                                              | Required |
+| ------------------------- | -------------------------------------------------------- | -------- |
+| `wp-sh_ssh_key`           | SSH public key for wp-sh user (file path or key content) | Yes      |
+| `mysql_wp-shbot_password` | MySQL admin password                                     | Yes      |
+| `certbot_email`           | Email for Let's Encrypt                                  | Yes      |
 
 ### Website Creation (website.yml)
 
@@ -249,7 +249,7 @@ ansible-playbook provision.yml -i "IP," -u root -vvv
 ### Test Connection
 
 ```bash
-ansible all -i "IP," -u wordmon -m ping
+ansible all -i "IP," -u wp-sh -m ping
 ```
 
 ## Advanced Usage
@@ -258,7 +258,7 @@ ansible all -i "IP," -u wordmon -m ping
 
 ```bash
 # Modify group_vars/all.yml or override
-ansible-playbook website.yml -i "IP," -u wordmon \
+ansible-playbook website.yml -i "IP," -u wp-sh \
   --extra-vars "domain=example.com system_name=examplecom ... php_version=8.2"
 ```
 
@@ -306,4 +306,4 @@ For issues specific to Ansible playbooks:
 2. Run with verbose output: `-vvv`
 3. Review logs on target server: `/var/log/syslog`, site-specific logs in `/sites/*/logs/`
 
-For general WordMon help, see the [main README](../README.md) or use the CLI: `wordmon --help`
+For general WPSH help, see the [main README](../README.md) or use the CLI: `wp-sh --help`

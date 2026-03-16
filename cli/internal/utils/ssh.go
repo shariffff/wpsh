@@ -10,7 +10,7 @@ import (
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/knownhosts"
-	"github.com/wordmon/cli/pkg/models"
+	"github.com/wp-sh/cli/pkg/models"
 )
 
 // TestSSHConnection tests SSH connectivity to a server
@@ -65,12 +65,12 @@ func TestSSHConnection(server models.Server) error {
 	defer session.Close()
 
 	// Test command execution
-	output, err := session.CombinedOutput("echo 'wordmon-test'")
+	output, err := session.CombinedOutput("echo 'wp-sh-test'")
 	if err != nil {
 		return fmt.Errorf("test command failed: %w", err)
 	}
 
-	if strings.TrimSpace(string(output)) != "wordmon-test" {
+	if strings.TrimSpace(string(output)) != "wp-sh-test" {
 		return fmt.Errorf("unexpected test output: %s", output)
 	}
 

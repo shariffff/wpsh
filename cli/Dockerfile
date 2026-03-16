@@ -22,11 +22,11 @@ ARG GO_ARCH=amd64
 
 # Build the binary
 RUN CGO_ENABLED=0 GOOS=${GO_OS} GOARCH=${GO_ARCH} go build \
-    -ldflags "-X github.com/wordmon/cli/cmd.Version=${VERSION} \
-              -X github.com/wordmon/cli/cmd.CommitSHA=${COMMIT_SHA} \
-              -X github.com/wordmon/cli/cmd.BuildDate=${BUILD_DATE}" \
-    -o wordmon .
+    -ldflags "-X github.com/wp-sh/cli/cmd.Version=${VERSION} \
+              -X github.com/wp-sh/cli/cmd.CommitSHA=${COMMIT_SHA} \
+              -X github.com/wp-sh/cli/cmd.BuildDate=${BUILD_DATE}" \
+    -o wp-sh .
 
 # Output stage - just the binary
 FROM scratch AS binary
-COPY --from=builder /build/wordmon /wordmon
+COPY --from=builder /build/wp-sh /wp-sh

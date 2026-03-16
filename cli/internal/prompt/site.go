@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/wordmon/cli/internal/utils"
-	"github.com/wordmon/cli/pkg/models"
+	"github.com/wp-sh/cli/internal/utils"
+	"github.com/wp-sh/cli/pkg/models"
 )
 
 // SiteInput holds the input for site creation
@@ -27,7 +27,7 @@ func PromptSiteCreate(servers []models.Server) (*SiteInput, error) {
 	input := &SiteInput{}
 
 	if len(servers) == 0 {
-		return nil, fmt.Errorf("no servers available. Add a server first with: wordmon server add")
+		return nil, fmt.Errorf("no servers available. Add a server first with: wp-sh server add")
 	}
 
 	// Filter only provisioned servers
@@ -39,7 +39,7 @@ func PromptSiteCreate(servers []models.Server) (*SiteInput, error) {
 	}
 
 	if len(provisionedServers) == 0 {
-		return nil, fmt.Errorf("no provisioned servers available. Provision a server first with: wordmon server provision <name>")
+		return nil, fmt.Errorf("no provisioned servers available. Provision a server first with: wp-sh server provision <name>")
 	}
 
 	// 1. Select server

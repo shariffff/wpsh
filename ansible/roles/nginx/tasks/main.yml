@@ -70,7 +70,7 @@
     mode: "0755"
 
 - name: Generate default SSL certificate
-  command: openssl req -x509 -nodes -days 1095 -newkey rsa:2048 -keyout /etc/nginx/sites-available/.no-default.key -out /etc/nginx/sites-available/.no-default.crt -subj "/C=US/O=WordMon"
+  command: openssl req -x509 -nodes -days 1095 -newkey rsa:2048 -keyout /etc/nginx/sites-available/.no-default.key -out /etc/nginx/sites-available/.no-default.crt -subj "/C=US/O=WPSH"
   args:
     creates: /etc/nginx/sites-available/.no-default.key
 

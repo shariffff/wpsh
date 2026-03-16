@@ -1,10 +1,10 @@
-# WordMon Project .gitignore
+# WPSH Project .gitignore
 
-# WordMon state database
-.wordmon.db
+# WPSH state database
+.wp-sh.db
 
 # CLI Binaries
-cli/wordmon
+cli/wp-sh
 *.exe
 *.exe~
 *.dll
@@ -44,8 +44,8 @@ ansible/*.retry
 *.pyc
 __pycache__/
 
-# User configuration (should be in ~/.wordmon/)
-wordmon.yaml
+# User configuration (should be in ~/.wp-sh/)
+wp-sh.yaml
 config.yaml
 
 # Logs

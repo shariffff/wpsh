@@ -4,8 +4,8 @@
   become: true
   vars:
     certbot_email: 'test@molecule.local'
-    mysql_wordmonbot_password: 'MoleculeTestPass123!'
-    wordmon_ssh_key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7fake+key+for+molecule+testing+only+not+a+real+key+do+not+use+in+production+abcdefghijklmnopqrstuvwxyz1234567890 molecule@test'
+    mysql_wp-shbot_password: 'MoleculeTestPass123!'
+    wp-sh_ssh_key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7fake+key+for+molecule+testing+only+not+a+real+key+do+not+use+in+production+abcdefghijklmnopqrstuvwxyz1234567890 molecule@test'
   roles:
     - role: bootstrap
     - role: database

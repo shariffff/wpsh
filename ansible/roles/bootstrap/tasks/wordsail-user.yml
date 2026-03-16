@@ -11,24 +11,24 @@
     line: '%sudo ALL=(ALL:ALL) ALL'
     validate: /usr/sbin/visudo -cf %s
 
-- name: Create wordmon user
+- name: Create wp-sh user
   ansible.builtin.user:
-    name: wordmon
+    name: wp-sh
     groups: sudo
     shell: /bin/bash
     create_home: true
     state: present
 
-- name: Set up authorized key for wordmon
+- name: Set up authorized key for wp-sh
   ansible.posix.authorized_key:
-    user: wordmon
-    key: "{{ lookup('file', wordmon_ssh_key) if wordmon_ssh_key is match('.*\\.(pub|pem)$') or wordmon_ssh_key.startswith('~') or wordmon_ssh_key.startswith('/') else wordmon_ssh_key }}"
+    user: wp-sh
+    key: "{{ lookup('file', wp-sh_ssh_key) if wp-sh_ssh_key is match('.*\\.(pub|pem)$') or wp-sh_ssh_key.startswith('~') or wp-sh_ssh_key.startswith('/') else wp-sh_ssh_key }}"
     state: present
     manage_dir: true
 
-- name: Configure sudoers for wordmon
+- name: Configure sudoers for wp-sh
   ansible.builtin.copy:
-    dest: /etc/sudoers.d/00-wordmon
-    content: 'wordmon ALL=(ALL) NOPASSWD: ALL'
+    dest: /etc/sudoers.d/00-wp-sh
+    content: 'wp-sh ALL=(ALL) NOPASSWD: ALL'
     mode: '0440'
     validate: /usr/sbin/visudo -cf %s

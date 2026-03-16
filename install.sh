@@ -1,14 +1,14 @@
 #!/bin/bash
 set -e
 
-# WordMon Installer
-# Usage: curl -fsSL https://raw.githubusercontent.com/shariffff/wordmon/main/install.sh | bash
+# WPSH Installer
+# Usage: curl -fsSL https://raw.githubusercontent.com/shariffff/wp-sh/main/install.sh | bash
 
-REPO="shariffff/wordmon"
-BINARY_NAME="wordmon"
+REPO="shariffff/wp-sh"
+BINARY_NAME="wp-sh"
 
 # Install directory (like Bun's ~/.bun)
-install_dir="${WORDMON_INSTALL:-$HOME/.wordmon}"
+install_dir="${WORDMON_INSTALL:-$HOME/.wp-sh}"
 bin_dir="$install_dir/bin"
 ansible_dir="$install_dir/ansible"
 
@@ -108,7 +108,7 @@ setup_shell() {
     # Append to config
     {
         echo ""
-        echo "# WordMon"
+        echo "# WPSH"
         echo -e "$shell_export"
     } >> "$config_file"
 
@@ -120,7 +120,7 @@ setup_shell() {
 }
 
 # Download and install
-install_wordmon() {
+install_wp-sh() {
     local os=$(detect_os)
     local arch=$(detect_arch)
     local version="${WORDMON_VERSION:-$(get_latest_version)}"
@@ -132,10 +132,10 @@ install_wordmon() {
     # Remove 'v' prefix if present for filename
     local version_num="${version#v}"
 
-    echo -e "${DIM}Installing WordMon ${version} (${os}/${arch})${NC}"
+    echo -e "${DIM}Installing WPSH ${version} (${os}/${arch})${NC}"
 
     # Construct download URL
-    local archive_name="wordmon_${version_num}_${os}_${arch}"
+    local archive_name="wp-sh_${version_num}_${os}_${arch}"
     local filename="${archive_name}"
     if [[ "$os" = "windows" ]]; then
         filename="${filename}.zip"
@@ -195,24 +195,24 @@ install_wordmon() {
 # Main
 main() {
     echo ""
-    echo -e "${BOLD}WordMon${NC} Installer"
+    echo -e "${BOLD}WPSH${NC} Installer"
     echo ""
 
     # Check for required tools
     command -v curl >/dev/null 2>&1 || error "curl is required but not installed"
     command -v tar >/dev/null 2>&1 || error "tar is required but not installed"
 
-    install_wordmon
+    install_wp-sh
     setup_shell
 
     echo ""
-    echo -e "${GREEN}WordMon was installed successfully!${NC}"
+    echo -e "${GREEN}WPSH was installed successfully!${NC}"
     echo ""
     echo "Run the following to get started:"
     echo ""
-    echo -e "  ${BOLD}source ~/.$(basename $SHELL)rc && wordmon init${NC}"
+    echo -e "  ${BOLD}source ~/.$(basename $SHELL)rc && wp-sh init${NC}"
     echo ""
-    echo -e "${DIM}Or restart your terminal and run: wordmon init${NC}"
+    echo -e "${DIM}Or restart your terminal and run: wp-sh init${NC}"
     echo ""
 }
 
